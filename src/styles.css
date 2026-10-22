@@ -5,20 +5,16 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ * Design system: "Мастер" — dark, warm, tactile.
+ * Two moods share one structure: coffee (espresso + copper) and tea (jade + gold).
+ * The active mood is set by data-mode on <html>.
+ * All colors use oklch.
  */
 
 @theme inline {
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -46,6 +42,9 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
+  --color-verified: var(--verified);
+  --color-tea: var(--tea);
+  --color-coffee: var(--coffee);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -61,75 +60,67 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* Coffee is the default mood */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --radius: 0.875rem;
+  --tea: oklch(0.36 0.07 155);
+  --coffee: oklch(0.3 0.05 45);
+  --background: oklch(0.16 0.018 50);
+  --foreground: oklch(0.94 0.02 80);
+  --card: oklch(0.21 0.022 50);
+  --card-foreground: oklch(0.94 0.02 80);
+  --popover: oklch(0.21 0.022 50);
+  --popover-foreground: oklch(0.94 0.02 80);
+  --primary: oklch(0.74 0.12 62);
+  --primary-foreground: oklch(0.18 0.02 50);
+  --secondary: oklch(0.26 0.024 50);
+  --secondary-foreground: oklch(0.94 0.02 80);
+  --muted: oklch(0.25 0.02 50);
+  --muted-foreground: oklch(0.72 0.03 70);
+  --accent: oklch(0.29 0.03 55);
+  --accent-foreground: oklch(0.94 0.02 80);
+  --destructive: oklch(0.62 0.2 27);
+  --destructive-foreground: oklch(0.98 0 0);
+  --verified: oklch(0.8 0.13 150);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.74 0.12 62);
+  --chart-1: oklch(0.74 0.12 62);
+  --chart-2: oklch(0.6 0.1 160);
+  --chart-3: oklch(0.5 0.07 50);
+  --chart-4: oklch(0.83 0.12 85);
+  --chart-5: oklch(0.65 0.15 30);
+  --sidebar: oklch(0.21 0.022 50);
+  --sidebar-foreground: oklch(0.94 0.02 80);
+  --sidebar-primary: oklch(0.74 0.12 62);
+  --sidebar-primary-foreground: oklch(0.18 0.02 50);
+  --sidebar-accent: oklch(0.26 0.024 50);
+  --sidebar-accent-foreground: oklch(0.94 0.02 80);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.74 0.12 62);
+
+  --glow: radial-gradient(60% 50% at 50% 0%, oklch(0.74 0.12 62 / 18%), transparent 70%);
 }
 
-.dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+:root[data-mode="tea"] {
+  --background: oklch(0.17 0.028 160);
+  --foreground: oklch(0.95 0.02 110);
+  --card: oklch(0.22 0.032 160);
+  --card-foreground: oklch(0.95 0.02 110);
+  --popover: oklch(0.22 0.032 160);
+  --popover-foreground: oklch(0.95 0.02 110);
+  --primary: oklch(0.82 0.11 92);
+  --primary-foreground: oklch(0.2 0.03 160);
+  --secondary: oklch(0.27 0.035 160);
+  --secondary-foreground: oklch(0.95 0.02 110);
+  --muted: oklch(0.26 0.03 160);
+  --muted-foreground: oklch(0.74 0.04 130);
+  --accent: oklch(0.3 0.04 155);
+  --accent-foreground: oklch(0.95 0.02 110);
+  --ring: oklch(0.82 0.11 92);
+  --sidebar: oklch(0.22 0.032 160);
+  --sidebar-primary: oklch(0.82 0.11 92);
+  --glow: radial-gradient(60% 50% at 50% 0%, oklch(0.82 0.11 92 / 14%), transparent 70%);
 }
 
 @layer base {
@@ -137,8 +128,102 @@
     border-color: var(--color-border);
   }
 
+  html {
+    transition:
+      background-color 0.5s ease,
+      color 0.5s ease;
+  }
+
   body {
     background-color: var(--color-background);
+    background-image: var(--glow);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.5s ease;
   }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+}
+
+/* ---------- Master business cards (bank-card look) ---------- */
+.mcard {
+  --mc-bg: linear-gradient(135deg, oklch(0.3 0.05 45), oklch(0.2 0.03 40) 55%, oklch(0.42 0.09 55));
+  --mc-fg: oklch(0.95 0.02 80);
+  --mc-muted: oklch(0.95 0.02 80 / 65%);
+  --mc-accent: oklch(0.78 0.12 65);
+  background: var(--mc-bg);
+  color: var(--mc-fg);
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 18%) inset,
+    0 30px 60px -25px oklch(0 0 0 / 70%),
+    0 10px 20px -10px oklch(0 0 0 / 50%);
+}
+.mcard[data-kind="tea"] {
+  --mc-bg: linear-gradient(135deg, oklch(0.36 0.07 155), oklch(0.22 0.04 165) 55%, oklch(0.45 0.08 125));
+  --mc-fg: oklch(0.96 0.02 110);
+  --mc-muted: oklch(0.96 0.02 110 / 65%);
+  --mc-accent: oklch(0.84 0.11 92);
+}
+.mcard[data-style="gold"] {
+  --mc-bg: linear-gradient(135deg, oklch(0.84 0.1 85), oklch(0.68 0.11 70) 50%, oklch(0.88 0.08 92));
+  --mc-fg: oklch(0.22 0.03 60);
+  --mc-muted: oklch(0.22 0.03 60 / 65%);
+  --mc-accent: oklch(0.3 0.05 60);
+}
+.mcard[data-style="noir"] {
+  --mc-bg: linear-gradient(135deg, oklch(0.16 0.005 60), oklch(0.1 0 0) 60%, oklch(0.26 0.01 60));
+  --mc-fg: oklch(0.94 0.01 80);
+  --mc-muted: oklch(0.94 0.01 80 / 60%);
+  --mc-accent: oklch(0.78 0.1 70);
+}
+.mcard[data-style="pearl"] {
+  --mc-bg: linear-gradient(135deg, oklch(0.97 0.01 90), oklch(0.9 0.02 80) 55%, oklch(0.95 0.03 140));
+  --mc-fg: oklch(0.24 0.03 60);
+  --mc-muted: oklch(0.24 0.03 60 / 60%);
+  --mc-accent: oklch(0.45 0.08 150);
+}
+.mcard-sheen {
+  background:
+    radial-gradient(120% 80% at 100% 0%, oklch(1 0 0 / 18%), transparent 50%),
+    repeating-linear-gradient(115deg, oklch(1 0 0 / 3%) 0 2px, transparent 2px 7px);
+}
+.mcard-chip {
+  background: linear-gradient(135deg, oklch(0.88 0.09 85), oklch(0.7 0.1 70) 60%, oklch(0.9 0.07 90));
+  box-shadow: 0 1px 0 oklch(1 0 0 / 40%) inset;
+}
+.mcard-emboss {
+  text-shadow:
+    0 1px 0 oklch(1 0 0 / 15%),
+    0 -1px 0 oklch(0 0 0 / 35%);
+}
+
+/* ---------- Brewing loaders ---------- */
+.brew-tea {
+  background: linear-gradient(180deg, oklch(0.72 0.14 85), oklch(0.55 0.13 65));
+}
+.brew-coffee {
+  background: linear-gradient(180deg, oklch(0.42 0.07 50), oklch(0.22 0.04 40));
+}
+.brew-crema {
+  background: linear-gradient(180deg, oklch(0.72 0.09 65), oklch(0.55 0.08 55));
+}
+.brew-cup {
+  background: oklch(0.96 0.01 80 / 8%);
+  border-color: oklch(0.96 0.01 80 / 35%);
+}
+.splash-shade-tea {
+  background: linear-gradient(90deg, oklch(0.12 0.03 160 / 10%), oklch(0.12 0.03 160 / 65%));
+}
+.splash-shade-coffee {
+  background: linear-gradient(270deg, oklch(0.1 0.02 45 / 10%), oklch(0.1 0.02 45 / 65%));
+}
+.splash-divider {
+  background: linear-gradient(180deg, transparent, oklch(0.95 0.02 90 / 60%), transparent);
 }
