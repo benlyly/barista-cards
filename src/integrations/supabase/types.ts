@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
       follows: {
         Row: {
           created_at: string
@@ -197,6 +215,7 @@ export type Database = {
           city: string
           created_at: string
           id: string
+          is_demo: boolean
           kind: string
           name: string
           title: string
@@ -212,6 +231,7 @@ export type Database = {
           city?: string
           created_at?: string
           id?: string
+          is_demo?: boolean
           kind: string
           name: string
           title?: string
@@ -227,6 +247,7 @@ export type Database = {
           city?: string
           created_at?: string
           id?: string
+          is_demo?: boolean
           kind?: string
           name?: string
           title?: string
@@ -317,6 +338,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      demo_visible: { Args: never; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
