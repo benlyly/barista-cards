@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Tables } from "@/integrations/supabase/types";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database, Tables } from "@/integrations/supabase/types";
 import type { Mode } from "@/lib/mode";
 
 export type Master = Tables<"masters">;
@@ -91,50 +92,41 @@ export type MasterDetail = {
   endorsements: Endorsement[];
 };
 
-export const masterQuery = (id: string) =>
-  queryOptions({
-    queryKey: ["master", id],
-    queryFn: async (): Promise<MasterDetail | null> => {
-      const { data: master, error } = await supabase
-        .from("masters")
-        .select("*")
-        .eq("id", id)
-        .maybeSingle();
-      if (error) throw error;
-      if (!master) return null;
-      const [ach, drinks, cafes, reviews, endorsements, follows] = await Promise.all([
-        supabase
-          .from("master_achievements")
-          .select("*")
-          .eq("master_id", id)
-          .order("verified", { ascending: false })
-          .order("year", { ascending: false, nullsFirst: false }),
-        supabase.from("master_drinks").select("*").eq("master_id", id).order("created_at"),
-        supabase.from("master_cafes").select("*").eq("master_id", id).order("created_at"),
-        supabase
-          .from("guest_reviews")
-          .select("*")
-          .eq("master_id", id)
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("peer_endorsements")
-          .select("*, author:masters!peer_endorsements_author_master_id_fkey(id,name,title,kind,avatar_url)")
-          .eq("master_id", id)
-          .order("created_at", { ascending: false }),
-        supabase.from("follows").select("*", { count: "exact", head: true }).eq("master_id", id),
-      ]);
-      for (const r of [ach, drinks, cafes, reviews, endorsements, follows]) if (r.error) throw r.error;
-      return {
-        master,
-        followers: follows.count ?? 0,
-        achievements: ach.data ?? [],
-        drinks: drinks.data ?? [],
-        cafes: cafes.data ?? [],
-        reviews: reviews.data ?? [],
-        endorsements: (endorsements.data ?? []) as unknown as Endorsement[],
-      };
-    },
-  });
+export async function fetchMasterDetail(
+  client: SupabaseClient<Database>,
+  id: string,
+): Promise<MasterDetail | null> {
+  const { data: master, error } = await client.from("masters").select("*").eq("id", id).maybeSingle();
+  if (error) throw error;
+  if (!master) return null;
+  const [ach, drinks, cafes, reviews, endorsements, follows] = await Promise.all([
+    client
+      .from("master_achievements")
+      .select("*")
+      .eq("master_id", id)
+      .order("verified", { ascending: false })
+      .order("year", { ascending: false, nullsFirst: false }),
+    client.from("master_drinks").select("*").eq("master_id", id).order("created_at"),
+    client.from("master_cafes").select("*").eq("master_id", id).order("created_at"),
+    client.from("guest_reviews").select("*").eq("master_id", id).order("created_at", { ascending: false }),
+    client
+      .from("peer_endorsements")
+      .select("*, author:masters!peer_endorsements_author_master_id_fkey(id,name,title,kind,avatar_url)")
+      .eq("master_id", id)
+      .order("created_at", { ascending: false }),
+    client.from("follows").select("*", { count: "exact", head: true }).eq("master_id", id),
+  ]);
+  for (const r of [ach, drinks, cafes, reviews, endorsements, follows]) if (r.error) throw r.error;
+  return {
+    master,
+    followers: follows.count ?? 0,
+    achievements: ach.data ?? [],
+    drinks: drinks.data ?? [],
+    cafes: cafes.data ?? [],
+    reviews: reviews.data ?? [],
+    endorsements: (endorsements.data ?? []) as unknown as Endorsement[],
+  };
+}
 
 export const myMasterQuery = (userId: string | undefined) =>
   queryOptions({
@@ -164,6 +156,14 @@ export const myFollowsQuery = (userId: string | undefined) =>
       return data;
     },
   });
+
+export const showDemoQuery = queryOptions({
+  queryKey: ["setting", "show_demo"],
+  queryFn: async () => {
+    const { data } = await supabase.from("app_settings").select("value").eq("key", "show_demo").maybeSingle();
+    return data ? data.value === true : true;
+  },
+});
 
 export const isAdminQuery = (userId: string | undefined) =>
   queryOptions({
