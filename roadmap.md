@@ -6,3 +6,4 @@
 - [ ] Sign up / sign in; master creates and edits own card
 - [ ] Admin confirms achievements
 - [ ] Share master profile by link and QR code (opens outside the app)
+- [x] Demo master profiles so the catalog isn't empty at launch (6 seeded: 3 coffee, 3 tea)
