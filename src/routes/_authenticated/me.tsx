@@ -200,7 +200,10 @@ function CardEditor({ userId, master }: { userId: string; master: Master | null 
 
   const onFile = async (file?: File) => {
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) return toast.error("Фото больше 5 МБ");
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Фото больше 5 МБ");
+      return;
+    }
     setUploading(true);
     try {
       const url = await uploadAvatar(userId, file);
@@ -239,7 +242,10 @@ function CardEditor({ userId, master }: { userId: string; master: Master | null 
         className="space-y-5 rounded-2xl border bg-card/60 p-5"
         onSubmit={(e) => {
           e.preventDefault();
-          if (!f.name.trim()) return toast.error("Укажите имя");
+          if (!f.name.trim()) {
+            toast.error("Укажите имя");
+            return;
+          }
           save.mutate();
         }}
       >
