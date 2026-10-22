@@ -80,15 +80,13 @@ export function ShareProfile({
             Покажите QR-код гостю у стойки или отправьте ссылку — профиль откроется в любом браузере.
           </DialogDescription>
         </DialogHeader>
-        <div ref={wrap} className="mx-auto rounded-2xl bg-foreground p-4">
+        <div ref={wrap} className="mx-auto rounded-2xl bg-foreground p-3">
           <QRCodeCanvas
             value={url}
             size={200}
             marginSize={1}
-            bgColor="transparent"
-            fgColor="currentColor"
-            className="text-background"
-            style={{ color: "var(--background)" }}
+            bgColor="#f7f3ea"
+            fgColor="#1c1410"
           />
         </div>
         <div className="flex items-center gap-2 rounded-lg border bg-muted px-3 py-2">

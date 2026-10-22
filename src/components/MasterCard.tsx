@@ -45,7 +45,7 @@ export function MasterCard({
 
         <div className="flex items-center justify-between">
           <div className="mcard-chip h-[18%] min-h-7 aspect-[1.3/1] rounded-md" aria-hidden />
-          <div className="size-[clamp(3rem,22%,5.5rem)] overflow-hidden rounded-full border border-[var(--mc-muted)]/40 bg-[var(--mc-fg)]/10 shadow-lg">
+          <div className="aspect-square w-[clamp(3rem,22%,5.5rem)] overflow-hidden rounded-full border border-[var(--mc-muted)]/40 bg-[var(--mc-fg)]/10 shadow-lg">
             {master.avatar_url ? (
               <img
                 src={master.avatar_url}
