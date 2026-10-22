@@ -109,7 +109,7 @@ function Section({
 }: {
   icon: typeof Trophy;
   title: string;
-  hint?: string;
+  hint?: string | undefined;
   children: React.ReactNode;
 }) {
   return (

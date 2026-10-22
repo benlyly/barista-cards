@@ -25,7 +25,7 @@ export function ModeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    document.documentElement.dataset.mode = mode;
+    document.documentElement.dataset["mode"] = mode;
   }, [mode]);
 
   const setMode = useCallback((m: Mode) => {

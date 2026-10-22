@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import type { Mode } from "@/lib/mode";
 
 /** Brewing animation: tea leaves steep and colour the water; coffee drips into a cup with crema. */
-export function BrewLoader({ mode, label }: { mode: Mode; label?: string }) {
+export function BrewLoader({ mode, label }: { mode: Mode; label?: string | undefined }) {
   return (
     <div className="flex flex-col items-center gap-6" role="status" aria-live="polite">
       {mode === "tea" ? <TeaBrew /> : <CoffeeBrew />}
@@ -92,7 +92,7 @@ function CoffeeBrew() {
   );
 }
 
-export function FullScreenBrew({ mode, label }: { mode: Mode; label?: string }) {
+export function FullScreenBrew({ mode, label }: { mode: Mode; label?: string | undefined }) {
   return (
     <div className="flex min-h-[70vh] items-center justify-center">
       <BrewLoader mode={mode} label={label} />

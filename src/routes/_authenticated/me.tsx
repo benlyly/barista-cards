@@ -509,7 +509,7 @@ function SimpleListEditor({
   const add = useMutation({
     mutationFn: async () => {
       const row: Record<string, string> = { master_id: masterId, name: name.trim(), [extraKey]: extra.trim() };
-      if (withCity) row.city = city.trim();
+      if (withCity) row["city"] = city.trim();
       const { error } = await supabase.from(table).insert(row as never);
       if (error) throw error;
     },
