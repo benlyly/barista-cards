@@ -45,6 +45,9 @@
   --color-verified: var(--verified);
   --color-tea: var(--tea);
   --color-coffee: var(--coffee);
+  --color-noir: var(--noir);
+  --color-mark-tea: var(--mark-tea);
+  --color-mark-coffee: var(--mark-coffee);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -98,6 +101,10 @@
   --sidebar-accent-foreground: oklch(0.94 0.02 80);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.74 0.12 62);
+
+  --noir: oklch(0.11 0.004 60);
+  --mark-tea: oklch(0.82 0.11 92);
+  --mark-coffee: oklch(0.74 0.12 62);
 
   --glow: radial-gradient(60% 50% at 50% 0%, oklch(0.74 0.12 62 / 18%), transparent 70%);
 }
@@ -218,12 +225,74 @@
   background: oklch(0.96 0.01 80 / 8%);
   border-color: oklch(0.96 0.01 80 / 35%);
 }
-.splash-shade-tea {
-  background: linear-gradient(90deg, oklch(0.12 0.03 160 / 10%), oklch(0.12 0.03 160 / 65%));
+/* ---------- Splash: near-black, independent of the active mood ---------- */
+.splash-noir {
+  background: var(--noir);
+  color: oklch(0.94 0.01 80);
 }
-.splash-shade-coffee {
-  background: linear-gradient(270deg, oklch(0.1 0.02 45 / 10%), oklch(0.1 0.02 45 / 65%));
+.splash-glow-tea {
+  background: radial-gradient(70% 55% at 30% 55%, oklch(0.82 0.11 92 / 16%), transparent 70%);
 }
-.splash-divider {
-  background: linear-gradient(180deg, transparent, oklch(0.95 0.02 90 / 60%), transparent);
+.splash-glow-coffee {
+  background: radial-gradient(70% 55% at 70% 55%, oklch(0.74 0.12 62 / 16%), transparent 70%);
+}
+.splash-choice {
+  background: oklch(1 0 0 / 2.5%);
+  border-color: oklch(1 0 0 / 9%);
+}
+.splash-choice:hover {
+  background: oklch(1 0 0 / 5%);
+  border-color: oklch(1 0 0 / 18%);
+}
+.splash-veil {
+  background: oklch(0.09 0.004 60 / 92%);
+  backdrop-filter: blur(4px);
+}
+
+/* ---------- Printed business card (paper, 90×50 mm) ---------- */
+.paper-card {
+  --pc-paper: oklch(0.975 0.008 85);
+  --pc-ink: oklch(0.2 0.015 60);
+  --pc-muted: oklch(0.2 0.015 60 / 62%);
+  --pc-rule: oklch(0.2 0.015 60 / 16%);
+  --pc-accent: oklch(0.5 0.1 50);
+  width: 100%;
+  aspect-ratio: 90 / 50;
+  background: var(--pc-paper);
+  color: var(--pc-ink);
+  border-radius: 0.375rem;
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 60%) inset,
+    0 24px 50px -24px oklch(0 0 0 / 70%);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.paper-card[data-kind="tea"] {
+  --pc-accent: oklch(0.45 0.08 155);
+}
+.paper-qr-placeholder {
+  border: 1px dashed var(--pc-muted);
+  background: repeating-linear-gradient(135deg, var(--pc-rule) 0 1px, transparent 1px 7px);
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+  html,
+  body {
+    background: oklch(1 0 0) !important;
+    background-image: none !important;
+  }
+  .paper-card {
+    width: 90mm;
+    height: 50mm;
+    border-radius: 0;
+    box-shadow: none;
+    outline: 0.2mm solid oklch(0.85 0 0);
+  }
+  .paper-side figcaption {
+    color: oklch(0.45 0 0);
+  }
 }

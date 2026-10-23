@@ -18,3 +18,4 @@
 - Demo visibility is the `show_demo` row in `app_settings`, enforced in the `masters` SELECT policy — hiding demos applies everywhere at once.
 - Avatars live in a private `avatars` bucket (public buckets are blocked in this workspace); store long-lived signed URLs in `masters.avatar_url`.
 - Card visuals are CSS classes (`.mcard` + `data-kind`/`data-style`) in `src/styles.css`; card text sizes use `cqw`, so wrap `MasterCard` in an element with `containerType: inline-size`.
+- Printed card QR links come only from `printableProfileUrl()` in `src/lib/print-card.ts`, which returns null on preview/local addresses — paper must never carry a link guests cannot open.
