@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";
-import { Check, Copy, Download, Share2 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Check, Copy, Download, Printer, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -101,6 +102,11 @@ export function ShareProfile({
           </Button>
           <Button onClick={nativeShare}>
             <Share2 /> Отправить
+          </Button>
+          <Button asChild variant="ghost" className="col-span-2">
+            <Link to="/card" search={{ id: masterId }}>
+              <Printer /> Бумажная визитка для печати
+            </Link>
           </Button>
         </div>
       </DialogContent>

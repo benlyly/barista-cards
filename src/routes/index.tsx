@@ -1,6 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
-import { animate, motion, useMotionValue, useTransform, AnimatePresence } from "motion/react";
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useTransform,
+  AnimatePresence,
+  type MotionValue,
+} from "motion/react";
 import { modeFromSwipe, useMode, type Mode } from "@/lib/mode";
 import { BrewLoader } from "@/components/BrewLoader";
 import { CoffeeBeanMark, TeaLeafMark } from "@/components/BrandMarks";
@@ -151,7 +158,7 @@ function Choice({
   mode: Mode;
   label: string;
   sub: string;
-  scale: ReturnType<typeof useTransform<number, number>>;
+  scale: MotionValue<number>;
   chosen: Mode | null;
   onChoose: (m: Mode) => void;
 }) {
