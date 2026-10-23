@@ -263,11 +263,11 @@ function Side({
     <div
       className={
         right
-          ? "absolute right-0 bottom-[22%] flex w-1/2 flex-col items-end px-7 text-right sm:px-14"
-          : "absolute bottom-[22%] left-0 flex w-full flex-col items-start px-7 sm:px-14"
+          ? "absolute right-0 bottom-[22%] flex w-1/2 flex-col items-end px-5 text-right sm:px-14"
+          : "absolute bottom-[22%] left-0 flex w-full flex-col items-start px-5 sm:px-14"
       }
     >
-      <motion.p {...rise(0.7)} className="text-[0.6rem] tracking-[0.35em] text-gold uppercase sm:text-xs">
+      <motion.p {...rise(0.7)} className="text-[0.55rem] whitespace-nowrap tracking-[0.22em] text-gold uppercase sm:text-xs sm:tracking-[0.35em]">
         {eyebrow}
       </motion.p>
       <motion.h2
