@@ -2,7 +2,6 @@ import { QRCodeSVG } from "qrcode.react";
 import { yearsLabel, type Master } from "@/lib/api";
 import type { Mode } from "@/lib/mode";
 import { CoffeeBeanMark, TeaLeafMark } from "@/components/BrandMarks";
-import { cn } from "@/lib/utils";
 
 export type PaperMaster = Pick<Master, "name" | "title" | "workplace" | "city" | "years_experience">;
 
@@ -104,11 +103,11 @@ export function PaperCardBack({
           )}
         </div>
 
-        <div className={cn("flex min-w-0 flex-col justify-between text-[var(--pc-ink)]")}>
+        <div className="flex min-w-0 flex-col justify-center gap-[3cqw] text-[var(--pc-ink)]">
           <div>
             <div className="text-[2.4cqw] tracking-[0.24em] uppercase text-[var(--pc-accent)]">Гостям</div>
-            <p className="mt-[1cqw] text-[3cqw] leading-snug">
-              Наведите камеру — откроется профиль мастера: награды, авторские напитки и любимые места.
+            <p className="mt-[1cqw] text-[2.9cqw] leading-snug">
+              Наведите камеру — откроется профиль мастера: награды и авторские напитки.
             </p>
           </div>
           <div className="border-t border-[var(--pc-rule)] pt-[2cqw]">
@@ -116,7 +115,7 @@ export function PaperCardBack({
               {kind === "tea" ? "Чайным мастерам" : "Бариста"}
             </div>
             <p className="mt-[1cqw] text-[2.7cqw] leading-snug text-[var(--pc-muted)]">
-              Соберите свою визитку в «Мастер» — гости будут следить за вашей работой.
+              Соберите свою визитку в «Мастер».
             </p>
           </div>
           <div className="truncate text-[2.2cqw] tracking-wide text-[var(--pc-muted)]">
