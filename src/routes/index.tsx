@@ -1,45 +1,47 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
-import {
-  animate,
-  motion,
-  useMotionValue,
-  useTransform,
-  AnimatePresence,
-  type MotionValue,
-} from "motion/react";
+import { animate, motion, useMotionValue, useTransform, AnimatePresence } from "motion/react";
+import { ArrowRight } from "lucide-react";
+import teaLeaf from "@/assets/tea-leaf.jpg";
+import coffeeBean from "@/assets/coffee-bean.jpg";
 import { modeFromSwipe, useMode, type Mode } from "@/lib/mode";
+import { useAuth } from "@/lib/auth";
 import { BrewLoader } from "@/components/BrewLoader";
-import { CoffeeBeanMark, TeaLeafMark } from "@/components/BrandMarks";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Мастер — чай или кофе?" },
+      { title: "Мастер — клуб бариста и чайных мастеров" },
       {
         name: "description",
         content:
-          "Выберите чай или кофе и откройте визитки мастеров: их награды, авторские напитки и любимые заведения.",
+          "Выберите чай или кофе и откройте именные визитки мастеров: их награды, авторские напитки и любимые заведения.",
       },
-      { property: "og:title", content: "Мастер — чай или кофе?" },
+      { property: "og:title", content: "Мастер — клуб бариста и чайных мастеров" },
       {
         property: "og:description",
-        content: "Визитки бариста и чайных мастеров. Подписывайтесь на своих мастеров.",
+        content: "Именные визитки бариста и чайных мастеров. Подписывайтесь на своих мастеров.",
       },
     ],
   }),
   component: Splash,
 });
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+const rise = (delay: number) => ({
+  initial: { opacity: 0, y: 14 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 1.1, delay, ease: EASE },
+});
+
 function Splash() {
   const { setMode } = useMode();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const x = useMotionValue(0);
-  const teaGlow = useTransform(x, [0, 140], [0, 1]);
-  const coffeeGlow = useTransform(x, [-140, 0], [1, 0]);
-  const teaScale = useTransform(x, [-140, 0, 140], [0.95, 1, 1.05]);
-  const coffeeScale = useTransform(x, [-140, 0, 140], [1.05, 1, 0.95]);
+  const leftWidth = useTransform(x, (v) => `calc(50% + ${v}px)`);
+  const dividerLeft = useTransform(x, (v) => `calc(50% + ${v}px)`);
+  const chromeOpacity = useTransform(x, [-140, 0, 140], [0.35, 1, 0.35]);
   const start = useRef<number | null>(null);
   const lock = useRef(false);
   const [chosen, setChosen] = useState<Mode | null>(null);
@@ -49,7 +51,8 @@ function Splash() {
     lock.current = true;
     setChosen(m);
     setMode(m);
-    animate(x, m === "tea" ? 140 : -140, { duration: 0.45, ease: [0.65, 0, 0.35, 1] });
+    const w = typeof window !== "undefined" ? window.innerWidth : 1000;
+    animate(x, m === "tea" ? w / 2 : -w / 2, { duration: 0.7, ease: [0.65, 0, 0.35, 1] });
     setTimeout(() => navigate({ to: "/masters" }), 2600);
   };
 
@@ -59,8 +62,7 @@ function Splash() {
   };
   const onMove = (e: React.PointerEvent) => {
     if (start.current === null || lock.current) return;
-    const dx = e.clientX - start.current;
-    x.set(Math.max(-160, Math.min(160, dx * 0.8)));
+    x.set((e.clientX - start.current) * 0.9);
   };
   const onUp = (e: React.PointerEvent) => {
     if (start.current === null) return;
@@ -68,68 +70,160 @@ function Splash() {
     start.current = null;
     const m = modeFromSwipe(dx, 80);
     if (m) choose(m);
+    else if (Math.abs(dx) < 6) choose(e.clientX < window.innerWidth / 2 ? "tea" : "coffee");
     else animate(x, 0, { type: "spring", stiffness: 300, damping: 30 });
+  };
+  const stop = {
+    onPointerDown: (e: React.PointerEvent) => e.stopPropagation(),
+    onPointerUp: (e: React.PointerEvent) => e.stopPropagation(),
   };
 
   return (
     <main
-      className="splash-noir relative flex h-[100svh] w-full touch-none flex-col items-center justify-between overflow-hidden px-6 py-[8svh] select-none"
+      className="splash-root relative h-[100svh] w-full cursor-grab touch-none overflow-hidden select-none active:cursor-grabbing"
       onPointerDown={onDown}
       onPointerMove={onMove}
       onPointerUp={onUp}
       onPointerCancel={onUp}
     >
-      <motion.div
-        className="splash-glow-tea pointer-events-none absolute inset-y-0 left-0 w-1/2"
-        style={{ opacity: teaGlow }}
-      />
-      <motion.div
-        className="splash-glow-coffee pointer-events-none absolute inset-y-0 right-0 w-1/2"
-        style={{ opacity: coffeeGlow }}
-      />
+      {/* Coffee — right, underneath */}
+      <div className="absolute inset-0">
+        <motion.img
+          src={coffeeBean}
+          alt="Кофейное зерно"
+          width={960}
+          height={1600}
+          draggable={false}
+          initial={{ scale: 1.12 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 3.2, ease: EASE }}
+          className="absolute top-0 right-0 h-full w-1/2 object-cover"
+        />
+        <div className="splash-shade-coffee absolute inset-y-0 right-0 w-1/2" />
+        <Side
+          side="right"
+          eyebrow="Кофейное ремесло"
+          title="Кофе"
+          sub="бариста и обжарщики"
+          hint="← влево"
+          onChoose={() => choose("coffee")}
+          stop={stop}
+        />
+      </div>
 
-      <header className="relative text-center">
-        <h1 className="font-display text-4xl font-semibold tracking-tight sm:text-5xl">
-          Мастер<span className="text-mark-coffee">.</span>
-        </h1>
-        <p className="mt-2 text-xs tracking-[0.3em] uppercase text-muted-foreground">
-          визитки бариста и чайных мастеров
-        </p>
-      </header>
-
-      <section className="relative w-full max-w-xl text-center">
-        <p className="font-display text-xl text-muted-foreground italic">Что вы пьёте сегодня?</p>
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-5">
-          <Choice
-            mode="tea"
-            label="Чай"
-            sub="чайные мастера"
-            scale={teaScale}
-            chosen={chosen}
-            onChoose={choose}
+      {/* Tea — left, resizable */}
+      <motion.div className="absolute inset-y-0 left-0 overflow-hidden" style={{ width: leftWidth }}>
+        <div className="absolute inset-y-0 left-0 w-[50vw]">
+          <motion.img
+            src={teaLeaf}
+            alt="Чайный лист"
+            width={960}
+            height={1600}
+            draggable={false}
+            initial={{ scale: 1.12 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 3.2, ease: EASE }}
+            className="h-full w-full object-cover"
           />
-          <Choice
-            mode="coffee"
-            label="Кофе"
-            sub="бариста и обжарщики"
-            scale={coffeeScale}
-            chosen={chosen}
-            onChoose={choose}
+          <div className="splash-shade-tea absolute inset-0" />
+          <Side
+            side="left"
+            eyebrow="Чайное искусство"
+            title="Чай"
+            sub="чайные мастера"
+            hint="вправо →"
+            onChoose={() => choose("tea")}
+            stop={stop}
           />
         </div>
-        <p className="mt-6 text-xs text-muted-foreground">
-          Можно и жестом: вправо — чай, влево — кофе
-        </p>
-      </section>
+      </motion.div>
 
-      <Link
-        to="/masters"
-        onPointerDown={(e) => e.stopPropagation()}
-        onPointerUp={(e) => e.stopPropagation()}
-        className="relative text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+      <div className="splash-vignette pointer-events-none absolute inset-0" />
+      <div className="splash-grain pointer-events-none absolute inset-0" />
+
+      {/* Gold divider with medallion */}
+      <motion.div
+        className="pointer-events-none absolute inset-y-0 z-10 w-0"
+        style={{ left: dividerLeft }}
       >
-        Сразу к мастерам
-      </Link>
+        <motion.div
+          className="splash-divider absolute inset-y-0 -left-px w-px"
+          initial={{ scaleY: 0 }}
+          animate={{ scaleY: 1 }}
+          transition={{ duration: 1.6, delay: 0.3, ease: EASE }}
+        />
+        <motion.div
+          className="splash-medallion absolute top-1/2 left-0 flex size-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full sm:size-16"
+          style={{ opacity: chromeOpacity }}
+          initial={{ scale: 0.6 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 1, delay: 0.9, ease: EASE }}
+        >
+          <span className="font-display text-lg text-gold italic sm:text-xl">или</span>
+        </motion.div>
+      </motion.div>
+
+      {/* Frame */}
+      <motion.div
+        className="splash-frame pointer-events-none absolute inset-3 z-10 sm:inset-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.6, delay: 0.5 }}
+      />
+
+      {/* Crest */}
+      <motion.header
+        className="pointer-events-none absolute inset-x-0 top-[7%] z-10 flex flex-col items-center text-center"
+        style={{ opacity: chromeOpacity }}
+      >
+        <motion.div
+          {...rise(0.2)}
+          className="flex size-11 items-center justify-center rounded-full border border-gold/60 sm:size-12"
+        >
+          <span className="font-display text-xl text-gold italic sm:text-2xl">М</span>
+        </motion.div>
+        <motion.h1
+          {...rise(0.35)}
+          className="mt-4 pl-[0.5em] font-display text-3xl font-medium tracking-[0.5em] uppercase sm:text-5xl"
+        >
+          Мастер
+        </motion.h1>
+        <motion.div {...rise(0.5)} className="mt-3 flex items-center gap-3">
+          <span className="splash-rule h-px w-8 sm:w-14" />
+          <span className="text-[0.6rem] tracking-[0.35em] text-gold/90 uppercase sm:text-[0.7rem]">
+            клуб бариста и чайных мастеров
+          </span>
+          <span className="splash-rule h-px w-8 sm:w-14" />
+        </motion.div>
+      </motion.header>
+
+      {/* Invitation for masters */}
+      <motion.div
+        className="absolute inset-x-0 bottom-[5%] z-10 flex flex-col items-center gap-3 px-6 text-center"
+        style={{ opacity: chromeOpacity }}
+      >
+        <motion.p {...rise(1.1)} className="font-display text-base text-foreground/80 italic sm:text-lg">
+          Вы мастер своего дела?
+        </motion.p>
+        <motion.div {...rise(1.25)}>
+          <Link
+            to={user ? "/me" : "/auth"}
+            {...stop}
+            className="splash-cta inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-[0.7rem] font-semibold tracking-[0.25em] text-gold uppercase"
+          >
+            Получить именную визитку <ArrowRight className="size-3.5" />
+          </Link>
+        </motion.div>
+        <motion.div {...rise(1.4)}>
+          <Link
+            to="/masters"
+            {...stop}
+            className="text-[0.7rem] tracking-[0.15em] text-foreground/55 underline-offset-4 hover:text-foreground hover:underline"
+          >
+            Сразу к мастерам
+          </Link>
+        </motion.div>
+      </motion.div>
 
       <AnimatePresence>
         {chosen && (
@@ -137,7 +231,7 @@ function Splash() {
             className="splash-veil absolute inset-0 z-20 flex items-center justify-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.4 }}
+            transition={{ delay: 0.5, duration: 0.4 }}
           >
             <BrewLoader mode={chosen} />
           </motion.div>
@@ -147,43 +241,61 @@ function Splash() {
   );
 }
 
-function Choice({
-  mode,
-  label,
+function Side({
+  side,
+  eyebrow,
+  title,
   sub,
-  scale,
-  chosen,
+  hint,
   onChoose,
+  stop,
 }: {
-  mode: Mode;
-  label: string;
+  side: "left" | "right";
+  eyebrow: string;
+  title: string;
   sub: string;
-  scale: MotionValue<number>;
-  chosen: Mode | null;
-  onChoose: (m: Mode) => void;
+  hint: string;
+  onChoose: () => void;
+  stop: { onPointerDown: (e: React.PointerEvent) => void; onPointerUp: (e: React.PointerEvent) => void };
 }) {
-  const Mark = mode === "tea" ? TeaLeafMark : CoffeeBeanMark;
-  const dimmed = chosen !== null && chosen !== mode;
+  const right = side === "right";
   return (
-    <motion.button
-      type="button"
-      style={{ scale }}
-      animate={{ opacity: dimmed ? 0.25 : 1 }}
-      onClick={() => onChoose(mode)}
-      data-choice={mode}
-      className={cn(
-        "splash-choice group flex flex-col items-center gap-4 rounded-3xl border px-4 py-8 transition-colors sm:py-10",
-        "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-      )}
+    <div
+      className={
+        right
+          ? "absolute right-0 bottom-[22%] flex w-1/2 flex-col items-end px-7 text-right sm:px-14"
+          : "absolute bottom-[22%] left-0 flex w-full flex-col items-start px-7 sm:px-14"
+      }
     >
-      <Mark
-        className={cn(
-          "size-14 transition-transform duration-500 group-hover:-rotate-6 sm:size-16",
-          mode === "tea" ? "text-mark-tea" : "text-mark-coffee",
-        )}
+      <motion.p {...rise(0.7)} className="text-[0.6rem] tracking-[0.35em] text-gold uppercase sm:text-xs">
+        {eyebrow}
+      </motion.p>
+      <motion.h2
+        {...rise(0.8)}
+        className="mt-2 font-display text-6xl leading-none font-medium italic sm:text-8xl"
+      >
+        {title}
+      </motion.h2>
+      <motion.span
+        {...rise(0.9)}
+        className={right ? "splash-rule mt-4 h-px w-16 origin-right" : "splash-rule mt-4 h-px w-16 origin-left"}
       />
-      <span className="font-display text-4xl font-semibold sm:text-5xl">{label}</span>
-      <span className="text-xs text-muted-foreground">{sub}</span>
-    </motion.button>
+      <motion.p {...rise(0.95)} className="mt-3 text-xs text-foreground/70 sm:text-sm">
+        {sub}
+      </motion.p>
+      <motion.button
+        {...rise(1.05)}
+        type="button"
+        {...stop}
+        onClick={onChoose}
+        data-choice={right ? "coffee" : "tea"}
+        className="group mt-5 inline-flex items-center gap-2 text-[0.65rem] font-semibold tracking-[0.3em] text-foreground uppercase sm:text-xs"
+      >
+        <span className="border-b border-gold/50 pb-1 transition-colors group-hover:border-gold group-hover:text-gold">
+          Войти
+        </span>
+        <span className="text-[0.6rem] tracking-normal text-foreground/50 normal-case">{hint}</span>
+      </motion.button>
+    </div>
   );
 }
