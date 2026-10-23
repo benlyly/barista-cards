@@ -45,9 +45,7 @@
   --color-verified: var(--verified);
   --color-tea: var(--tea);
   --color-coffee: var(--coffee);
-  --color-noir: var(--noir);
-  --color-mark-tea: var(--mark-tea);
-  --color-mark-coffee: var(--mark-coffee);
+  --color-gold: var(--gold);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -102,9 +100,7 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.74 0.12 62);
 
-  --noir: oklch(0.11 0.004 60);
-  --mark-tea: oklch(0.82 0.11 92);
-  --mark-coffee: oklch(0.74 0.12 62);
+  --gold: oklch(0.85 0.1 85);
 
   --glow: radial-gradient(60% 50% at 50% 0%, oklch(0.74 0.12 62 / 18%), transparent 70%);
 }
@@ -225,24 +221,79 @@
   background: oklch(0.96 0.01 80 / 8%);
   border-color: oklch(0.96 0.01 80 / 35%);
 }
-/* ---------- Splash: near-black, independent of the active mood ---------- */
-.splash-noir {
-  background: var(--noir);
-  color: oklch(0.94 0.01 80);
+/* ---------- Splash: photo split, cinematic grading, gold hairlines ---------- */
+.splash-root {
+  background: oklch(0.08 0.004 60);
+  color: oklch(0.95 0.015 85);
 }
-.splash-glow-tea {
-  background: radial-gradient(70% 55% at 30% 55%, oklch(0.82 0.11 92 / 16%), transparent 70%);
+.splash-shade-tea {
+  background:
+    linear-gradient(180deg, oklch(0.08 0.02 160 / 55%), transparent 30%, transparent 55%, oklch(0.07 0.02 160 / 92%)),
+    linear-gradient(90deg, oklch(0.08 0.02 160 / 15%), oklch(0.08 0.02 160 / 55%));
 }
-.splash-glow-coffee {
-  background: radial-gradient(70% 55% at 70% 55%, oklch(0.74 0.12 62 / 16%), transparent 70%);
+.splash-shade-coffee {
+  background:
+    linear-gradient(180deg, oklch(0.07 0.015 45 / 55%), transparent 30%, transparent 55%, oklch(0.06 0.015 45 / 92%)),
+    linear-gradient(270deg, oklch(0.07 0.015 45 / 15%), oklch(0.07 0.015 45 / 55%));
 }
-.splash-choice {
-  background: oklch(1 0 0 / 2.5%);
-  border-color: oklch(1 0 0 / 9%);
+.splash-vignette {
+  background: radial-gradient(120% 90% at 50% 45%, transparent 55%, oklch(0 0 0 / 70%));
 }
-.splash-choice:hover {
-  background: oklch(1 0 0 / 5%);
-  border-color: oklch(1 0 0 / 18%);
+.splash-grain {
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.splash-frame {
+  border: 1px solid oklch(0.82 0.09 85 / 28%);
+}
+.splash-frame::before,
+.splash-frame::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: oklch(0.85 0.1 85 / 75%);
+  border-style: solid;
+}
+.splash-frame::before {
+  top: -1px;
+  left: -1px;
+  border-width: 1px 0 0 1px;
+}
+.splash-frame::after {
+  right: -1px;
+  bottom: -1px;
+  border-width: 0 1px 1px 0;
+}
+.splash-divider {
+  background: linear-gradient(180deg, transparent 27%, oklch(0.85 0.1 85 / 70%) 40%, oklch(0.85 0.1 85 / 70%) 60%, transparent 76%);
+}
+.splash-medallion {
+  background: oklch(0.1 0.01 60 / 70%);
+  border: 1px solid oklch(0.85 0.1 85 / 60%);
+  box-shadow:
+    0 0 0 4px oklch(0.1 0.01 60 / 45%),
+    0 0 0 5px oklch(0.85 0.1 85 / 22%),
+    0 10px 40px -10px oklch(0 0 0 / 80%);
+  backdrop-filter: blur(6px);
+}
+.splash-rule {
+  background: linear-gradient(90deg, transparent, oklch(0.85 0.1 85 / 80%), transparent);
+}
+.splash-cta {
+  border: 1px solid oklch(0.85 0.1 85 / 55%);
+  background: oklch(0.1 0.01 60 / 45%);
+  backdrop-filter: blur(8px);
+  transition:
+    background-color 0.4s ease,
+    border-color 0.4s ease,
+    color 0.4s ease;
+}
+.splash-cta:hover {
+  background: oklch(0.85 0.1 85);
+  border-color: oklch(0.85 0.1 85);
+  color: oklch(0.16 0.02 60);
 }
 .splash-veil {
   background: oklch(0.09 0.004 60 / 92%);
