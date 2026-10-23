@@ -1,6 +1,6 @@
 # Roadmap
 
-- [x] Splash: near-black with tea leaf / coffee bean marks and clear Чай / Кофе buttons, swipe as extra gesture, brewing loader
+- [x] Splash: elegant photo split (tea leaf / coffee bean), gold frame and crest, clear Чай / Кофе, swipe as extra gesture, invitation for masters, brewing loader
 - [x] Gallery of master cards (bank-card style), click to enlarge; compact header tea/coffee toggle + swipe
 - [x] Master profile: years, workplace, achievements (self-added vs verified), peer recognition, guest reviews, signature drinks, recommended cafes, follow
 - [x] Public master page readable without the app: avatar, specialty, workplace, signature drinks (server-rendered)
