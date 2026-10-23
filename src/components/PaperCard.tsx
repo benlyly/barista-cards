@@ -19,7 +19,7 @@ function Sheet({ kind, children, label }: { kind: Mode; children: React.ReactNod
   );
 }
 
-function Mark({ kind, className }: { kind: Mode; className?: string }) {
+function Mark({ kind, className }: { kind: Mode; className?: string | undefined }) {
   return kind === "tea" ? <TeaLeafMark className={className} /> : <CoffeeBeanMark className={className} />;
 }
 

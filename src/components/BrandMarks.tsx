@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 /** Line-art tea leaf: one leaf with a central vein and three pairs of side veins. */
-export function TeaLeafMark({ className }: { className?: string }) {
+export function TeaLeafMark({ className }: { className?: string | undefined }) {
   return (
     <svg
       viewBox="0 0 64 64"
@@ -24,7 +24,7 @@ export function TeaLeafMark({ className }: { className?: string }) {
 }
 
 /** Line-art coffee bean: tilted oval with the characteristic S-shaped crease. */
-export function CoffeeBeanMark({ className }: { className?: string }) {
+export function CoffeeBeanMark({ className }: { className?: string | undefined }) {
   return (
     <svg
       viewBox="0 0 64 64"
