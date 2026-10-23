@@ -72,7 +72,7 @@ function PrintCardPage() {
         <div className="mt-8 flex flex-col gap-4 print:hidden">
           <Notice master={!!master} url={url} isOwn={isOwn} loggedIn={!!user} origin={origin} />
           <div className="flex flex-wrap gap-2">
-            <Button onClick={() => window.print()} className="rounded-full" disabled={!master}>
+            <Button onClick={() => window.print()} className="rounded-full">
               <Printer /> Распечатать
             </Button>
             {master && (
