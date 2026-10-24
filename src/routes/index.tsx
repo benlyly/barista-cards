@@ -157,12 +157,9 @@ function Splash() {
       </motion.header>
 
       {/* Rhombus + labels */}
-      <div
-        className="relative z-10 flex flex-col items-center"
-        style={{ width: "min(94vw, 760px, calc((100svh - 400px) * 1.32))" }}
-      >
+      <div className="relative z-10 grid w-full max-w-5xl grid-cols-[1fr_auto_1fr] items-center gap-x-3 px-3 sm:gap-x-8 sm:px-6">
         <motion.div
-          className="relative w-full"
+          className="splash-rh relative order-first col-span-3 justify-self-center sm:order-2 sm:col-span-1"
           style={{ x, rotate: tilt, scale }}
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1 }}
@@ -185,10 +182,7 @@ function Splash() {
           />
         </motion.div>
 
-        <motion.div
-          className="-mt-2 grid w-full grid-cols-[1fr_auto_1fr] items-start gap-3 sm:-mt-4"
-          style={{ opacity: chromeOpacity }}
-        >
+        <motion.div className="order-2 justify-self-start sm:order-1 sm:justify-self-end" style={{ opacity: chromeOpacity }}>
           <Label
             align="left"
             eyebrow="Чайное искусство"
@@ -197,12 +191,16 @@ function Splash() {
             onChoose={() => choose("tea")}
             stop={stop}
           />
+        </motion.div>
+        <motion.div className="order-3 sm:hidden" style={{ opacity: chromeOpacity }}>
           <motion.div
             {...rise(1)}
-            className="splash-medallion mt-3 flex size-11 items-center justify-center rounded-full sm:size-12"
+            className="splash-medallion flex size-11 items-center justify-center rounded-full"
           >
-            <span className="font-display text-base text-gold italic sm:text-lg">или</span>
+            <span className="font-display text-base text-gold italic">или</span>
           </motion.div>
+        </motion.div>
+        <motion.div className="order-4 justify-self-end sm:order-3 sm:justify-self-start" style={{ opacity: chromeOpacity }}>
           <Label
             align="right"
             eyebrow="Кофейное ремесло"
