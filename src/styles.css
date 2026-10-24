@@ -156,23 +156,33 @@
 }
 
 /* ---------- Master business cards (bank-card look) ---------- */
+/* Classic = black card with a coffee (copper) or tea (jade) glow */
 .mcard {
-  --mc-bg: linear-gradient(135deg, oklch(0.3 0.05 45), oklch(0.2 0.03 40) 55%, oklch(0.42 0.09 55));
+  --mc-bg:
+    radial-gradient(90% 120% at 100% 0%, oklch(0.42 0.09 55 / 45%), transparent 60%),
+    radial-gradient(70% 90% at 0% 100%, oklch(0.3 0.05 45 / 35%), transparent 65%),
+    linear-gradient(135deg, oklch(0.17 0.008 55), oklch(0.1 0.004 50) 55%, oklch(0.14 0.008 55));
   --mc-fg: oklch(0.95 0.02 80);
-  --mc-muted: oklch(0.95 0.02 80 / 65%);
-  --mc-accent: oklch(0.78 0.12 65);
+  --mc-muted: oklch(0.95 0.02 80 / 60%);
+  --mc-accent: oklch(0.8 0.11 65);
+  --mc-edge: oklch(0.8 0.11 65 / 30%);
   background: var(--mc-bg);
   color: var(--mc-fg);
   box-shadow:
-    0 1px 0 oklch(1 0 0 / 18%) inset,
-    0 30px 60px -25px oklch(0 0 0 / 70%),
-    0 10px 20px -10px oklch(0 0 0 / 50%);
+    0 0 0 1px var(--mc-edge) inset,
+    0 1px 0 oklch(1 0 0 / 14%) inset,
+    0 30px 60px -25px oklch(0 0 0 / 75%),
+    0 10px 20px -10px oklch(0 0 0 / 55%);
 }
 .mcard[data-kind="tea"] {
-  --mc-bg: linear-gradient(135deg, oklch(0.36 0.07 155), oklch(0.22 0.04 165) 55%, oklch(0.45 0.08 125));
+  --mc-bg:
+    radial-gradient(90% 120% at 100% 0%, oklch(0.5 0.12 150 / 40%), transparent 60%),
+    radial-gradient(70% 90% at 0% 100%, oklch(0.36 0.07 155 / 35%), transparent 65%),
+    linear-gradient(135deg, oklch(0.16 0.012 160), oklch(0.1 0.006 160) 55%, oklch(0.14 0.012 155));
   --mc-fg: oklch(0.96 0.02 110);
-  --mc-muted: oklch(0.96 0.02 110 / 65%);
-  --mc-accent: oklch(0.84 0.11 92);
+  --mc-muted: oklch(0.96 0.02 110 / 60%);
+  --mc-accent: oklch(0.85 0.11 92);
+  --mc-edge: oklch(0.85 0.11 92 / 28%);
 }
 .mcard[data-style="gold"] {
   --mc-bg: linear-gradient(135deg, oklch(0.84 0.1 85), oklch(0.68 0.11 70) 50%, oklch(0.88 0.08 92));
