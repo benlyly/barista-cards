@@ -65,8 +65,8 @@ function Splash() {
   const coffeeX = useTransform(x, (v) => Math.min(v, 0));
   const teaRotate = useTransform(x, [0, 260], [0, 7]);
   const coffeeRotate = useTransform(x, [-260, 0], [-7, 0]);
-  const teaOpacity = useTransform(x, [-260, 0], [0.15, 1]);
-  const coffeeOpacity = useTransform(x, [0, 260], [1, 0.15]);
+  const teaOpacity = useTransform(x, [-260, 0], [0.3, 1]);
+  const coffeeOpacity = useTransform(x, [0, 260], [1, 0.3]);
   const teaLabel = useTransform(x, [-200, 0, 200], [0, 1, 0.6]);
   const coffeeLabel = useTransform(x, [-200, 0, 200], [0.6, 1, 0]);
 
@@ -87,9 +87,10 @@ function Splash() {
   const onDown = (e: React.PointerEvent<HTMLElement>) => {
     if (lock.current) return;
     start.current = e.clientX;
+    delete e.currentTarget.dataset["side"];
   };
   const onMove = (e: React.PointerEvent<HTMLElement>) => {
-    if (e.pointerType === "mouse" && !lock.current) {
+    if (e.pointerType === "mouse" && !lock.current && start.current === null) {
       e.currentTarget.dataset["side"] = sideOf(e.clientX);
     }
     if (start.current === null || lock.current) return;
