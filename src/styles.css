@@ -156,23 +156,33 @@
 }
 
 /* ---------- Master business cards (bank-card look) ---------- */
+/* Classic = black card with a coffee (copper) or tea (jade) glow */
 .mcard {
-  --mc-bg: linear-gradient(135deg, oklch(0.3 0.05 45), oklch(0.2 0.03 40) 55%, oklch(0.42 0.09 55));
+  --mc-bg:
+    radial-gradient(90% 120% at 100% 0%, oklch(0.42 0.09 55 / 45%), transparent 60%),
+    radial-gradient(70% 90% at 0% 100%, oklch(0.3 0.05 45 / 35%), transparent 65%),
+    linear-gradient(135deg, oklch(0.17 0.008 55), oklch(0.1 0.004 50) 55%, oklch(0.14 0.008 55));
   --mc-fg: oklch(0.95 0.02 80);
-  --mc-muted: oklch(0.95 0.02 80 / 65%);
-  --mc-accent: oklch(0.78 0.12 65);
+  --mc-muted: oklch(0.95 0.02 80 / 60%);
+  --mc-accent: oklch(0.8 0.11 65);
+  --mc-edge: oklch(0.8 0.11 65 / 30%);
   background: var(--mc-bg);
   color: var(--mc-fg);
   box-shadow:
-    0 1px 0 oklch(1 0 0 / 18%) inset,
-    0 30px 60px -25px oklch(0 0 0 / 70%),
-    0 10px 20px -10px oklch(0 0 0 / 50%);
+    0 0 0 1px var(--mc-edge) inset,
+    0 1px 0 oklch(1 0 0 / 14%) inset,
+    0 30px 60px -25px oklch(0 0 0 / 75%),
+    0 10px 20px -10px oklch(0 0 0 / 55%);
 }
 .mcard[data-kind="tea"] {
-  --mc-bg: linear-gradient(135deg, oklch(0.36 0.07 155), oklch(0.22 0.04 165) 55%, oklch(0.45 0.08 125));
+  --mc-bg:
+    radial-gradient(90% 120% at 100% 0%, oklch(0.5 0.12 150 / 40%), transparent 60%),
+    radial-gradient(70% 90% at 0% 100%, oklch(0.36 0.07 155 / 35%), transparent 65%),
+    linear-gradient(135deg, oklch(0.16 0.012 160), oklch(0.1 0.006 160) 55%, oklch(0.14 0.012 155));
   --mc-fg: oklch(0.96 0.02 110);
-  --mc-muted: oklch(0.96 0.02 110 / 65%);
-  --mc-accent: oklch(0.84 0.11 92);
+  --mc-muted: oklch(0.96 0.02 110 / 60%);
+  --mc-accent: oklch(0.85 0.11 92);
+  --mc-edge: oklch(0.85 0.11 92 / 28%);
 }
 .mcard[data-style="gold"] {
   --mc-bg: linear-gradient(135deg, oklch(0.84 0.1 85), oklch(0.68 0.11 70) 50%, oklch(0.88 0.08 92));
@@ -298,6 +308,68 @@
 .splash-veil {
   background: oklch(0.09 0.004 60 / 92%);
   backdrop-filter: blur(4px);
+}
+.splash-veil[data-kind="tea"] {
+  background: radial-gradient(circle at 50% 50%, oklch(0.28 0.07 155 / 96%), oklch(0.1 0.02 160 / 98%) 70%);
+}
+.splash-veil[data-kind="coffee"] {
+  background: radial-gradient(circle at 50% 50%, oklch(0.27 0.05 50 / 96%), oklch(0.09 0.012 45 / 98%) 70%);
+}
+.splash-glow {
+  background:
+    radial-gradient(40% 45% at 28% 52%, oklch(0.45 0.12 150 / 14%), transparent 70%),
+    radial-gradient(40% 45% at 72% 52%, oklch(0.5 0.1 55 / 14%), transparent 70%);
+}
+
+/* Rhombus on the entry screen */
+.splash-rh {
+  width: min(86vw, 520px, calc((100svh - 430px) * 1.32));
+}
+@media (min-width: 640px) {
+  .splash-rh {
+    width: min(54vw, 660px, calc((100svh - 300px) * 1.32));
+  }
+}
+.rh-lines,
+.rh-ornament {
+  stroke: oklch(0.85 0.1 85 / 85%);
+}
+.rh-dot {
+  fill: oklch(0.85 0.1 85 / 85%);
+  stroke: none;
+}
+.rh-glint {
+  stroke: oklch(0.97 0.05 90);
+  filter: drop-shadow(0 0 6px oklch(0.9 0.1 85));
+}
+.rh-flood-tea {
+  fill: oklch(0.55 0.13 145);
+}
+.rh-flood-coffee {
+  fill: oklch(0.42 0.08 50);
+}
+.rh-half {
+  transition: filter 0.5s ease;
+}
+.splash-root[data-side="tea"] .rh-half[data-side="coffee"],
+.splash-root[data-side="coffee"] .rh-half[data-side="tea"] {
+  filter: brightness(0.5) saturate(0.6);
+}
+
+/* Cursor: a tea leaf over the tea side, a coffee bean over the coffee side */
+.splash-root[data-side="tea"],
+.splash-root[data-side="tea"] * {
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 64 64'><path d='M13 51C10 31 25 12 53 11C54 36 37 53 13 51Z' fill='%234f9a5c' stroke='%23ead18c' stroke-width='3' stroke-linejoin='round'/><path d='M13 51C25 39 35 29 47 17M13 51L7 57' fill='none' stroke='%23ead18c' stroke-width='3' stroke-linecap='round'/></svg>")
+      16 16,
+    pointer;
+}
+.splash-root[data-side="coffee"],
+.splash-root[data-side="coffee"] * {
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 64 64'><g transform='rotate(-32 32 32)'><ellipse cx='32' cy='32' rx='16.5' ry='23' fill='%236b3f22' stroke='%23dca468' stroke-width='3'/><path d='M32 9.5C23 19 41 43 32 54.5' fill='none' stroke='%23dca468' stroke-width='3' stroke-linecap='round'/></g></svg>")
+      16 16,
+    pointer;
 }
 
 /* ---------- Printed business card (paper, 90×50 mm) ---------- */

@@ -12,3 +12,11 @@
 - [x] Prominent "Создать свою карточку" button in the catalog
 - [x] Printable two-sided paper business card with real profile QR (placeholder until published)
 - [ ] Give the owner admin rights — blocked: owner must sign up first, then ask
+
+## Plan (from Oct 24)
+- [x] Today (Oct 24): entry screen = wide rhombus (corners left/right), splashing green tea left half, splashing coffee right half; on choice it floats to that side and floods tea/coffee colour into the brewing loader; cursor = leaf on tea side, bean on coffee side
+- [x] Today: master cards in black (default style; sample cards switched to it)
+- [ ] Oct 25: languages — blocked: which languages besides Russian
+- [ ] Oct 26: finish the look
+- [ ] Oct 27+: testing, then publish
+- [ ] Promo paper card for coffee shops (advertises the app, QR to the published app) — needs the published address first

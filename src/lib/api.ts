@@ -17,9 +17,9 @@ export type MasterListItem = Master & { followers: number; verifiedCount: number
 
 export type CardStyle = "classic" | "gold" | "noir" | "pearl";
 export const CARD_STYLES: { value: CardStyle; label: string }[] = [
-  { value: "classic", label: "Классика" },
+  { value: "classic", label: "Чёрная" },
   { value: "gold", label: "Золото" },
-  { value: "noir", label: "Нуар" },
+  { value: "noir", label: "Графит" },
   { value: "pearl", label: "Жемчуг" },
 ];
 
