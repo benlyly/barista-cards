@@ -147,12 +147,12 @@ function Splash() {
         >
           Мастер
         </motion.h1>
-        <motion.div {...rise(0.5)} className="mt-2 flex items-center gap-3">
-          <span className="splash-rule h-px w-8 sm:w-14" />
-          <span className="text-[0.6rem] tracking-[0.35em] text-gold/90 uppercase sm:text-[0.7rem]">
+        <motion.div {...rise(0.5)} className="mt-2 flex items-center gap-2 sm:gap-3">
+          <span className="splash-rule h-px w-5 sm:w-14" />
+          <span className="text-[0.55rem] whitespace-nowrap tracking-[0.2em] text-gold/90 uppercase sm:text-[0.7rem] sm:tracking-[0.35em]">
             клуб бариста и чайных мастеров
           </span>
-          <span className="splash-rule h-px w-8 sm:w-14" />
+          <span className="splash-rule h-px w-5 sm:w-14" />
         </motion.div>
       </motion.header>
 
@@ -403,8 +403,8 @@ function Label({
       data-choice={right ? "coffee" : "tea"}
       className={
         right
-          ? "group flex flex-col items-end text-right"
-          : "group flex flex-col items-start text-left"
+          ? "group flex flex-col items-end text-right sm:items-start sm:text-left"
+          : "group flex flex-col items-start text-left sm:items-end sm:text-right"
       }
     >
       <span className="text-[0.55rem] whitespace-nowrap tracking-[0.22em] text-gold uppercase sm:text-[0.7rem] sm:tracking-[0.35em]">

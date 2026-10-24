@@ -312,6 +312,14 @@
 }
 
 /* Rhombus on the entry screen */
+.splash-rh {
+  width: min(86vw, 520px, calc((100svh - 430px) * 1.32));
+}
+@media (min-width: 640px) {
+  .splash-rh {
+    width: min(54vw, 660px, calc((100svh - 300px) * 1.32));
+  }
+}
 .rh-lines,
 .rh-ornament {
   stroke: oklch(0.85 0.1 85 / 85%);
