@@ -1,11 +1,14 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
-import { animate, motion, useMotionValue, useTransform, AnimatePresence } from "motion/react";
-import { ArrowRight } from "lucide-react";
-import splashTea from "@/assets/splash-tea.jpg";
-import splashCoffee from "@/assets/splash-coffee.jpg";
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useTransform,
+  AnimatePresence,
+  type MotionValue,
+} from "motion/react";
 import { modeFromSwipe, useMode, type Mode } from "@/lib/mode";
-import { useAuth } from "@/lib/auth";
 import { BrewLoader } from "@/components/BrewLoader";
 
 export const Route = createFileRoute("/")({
@@ -30,53 +33,53 @@ export const Route = createFileRoute("/")({
 });
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-const rise = (delay: number) => ({
-  initial: { opacity: 0, y: 14 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 1.1, delay, ease: EASE },
-});
 
-/* Rhombus geometry (SVG units). Sharp corners point left and right. */
-const W = 1400;
-const H = 1000;
-const PAD = 120;
-const VB_W = W + PAD * 2;
-const VB_H = H + PAD * 2;
-const RHOMB = `0,${H / 2} ${W / 2},0 ${W},${H / 2} ${W / 2},${H}`;
-const LEFT = `0,${H / 2} ${W / 2},0 ${W / 2},${H}`;
-const RIGHT = `${W / 2},0 ${W},${H / 2} ${W / 2},${H}`;
-const INSET = 26;
-const RHOMB_INNER = `${INSET * 1.4},${H / 2} ${W / 2},${INSET} ${W - INSET * 1.4},${H / 2} ${W / 2},${H - INSET}`;
-const pct = (v: number, total: number) => `${(((v + PAD) / total) * 100).toFixed(3)}%`;
-const clipLeft = `polygon(${pct(0, VB_W)} 50%, 50% ${pct(0, VB_H)}, 50% ${pct(H, VB_H)})`;
-const clipRight = `polygon(50% ${pct(0, VB_H)}, ${pct(W, VB_W)} 50%, 50% ${pct(H, VB_H)})`;
+/* One half of the rhombus, in its own SVG units. */
+const HW = 700;
+const HH = 1000;
+const LEVEL = 500; // liquid fills half the triangle
+const TEA_TRI = `0,${HH / 2} ${HW},0 ${HW},${HH}`;
+const COFFEE_TRI = `0,0 ${HW},${HH / 2} 0,${HH}`;
+
+/** Wavy liquid surface from x0 to x1, closed down to the bottom. */
+function wavePath(y: number, amp: number, period: number, x0 = -700, x1 = 1400, bottom = HH + 200) {
+  let d = `M${x0} ${y}`;
+  for (let x = x0; x < x1; x += period) {
+    d += ` Q${x + period / 4} ${y - amp} ${x + period / 2} ${y} T${x + period} ${y}`;
+  }
+  return `${d} L${x1} ${bottom} L${x0} ${bottom} Z`;
+}
 
 function Splash() {
   const { setMode } = useMode();
-  const { user } = useAuth();
   const navigate = useNavigate();
   const x = useMotionValue(0);
-  const scale = useMotionValue(1);
   const flood = useMotionValue(0);
-  const tilt = useTransform(x, [-200, 0, 200], [-4, 0, 4]);
-  const teaOpacity = useTransform(x, [-140, 0, 140], [0.35, 1, 1]);
-  const coffeeOpacity = useTransform(x, [-140, 0, 140], [1, 1, 0.35]);
-  const chromeOpacity = useTransform(x, [-160, 0, 160], [0.4, 1, 0.4]);
   const start = useRef<number | null>(null);
   const lock = useRef(false);
+  const [lead, setLead] = useState<Mode | null>(null);
   const [chosen, setChosen] = useState<Mode | null>(null);
 
-  /** dir: -1 floats left, 1 floats right. */
-  const choose = (m: Mode, dir: -1 | 1 = m === "tea" ? -1 : 1) => {
+  // Pull right → the tea triangle tears off and follows; pull left → the coffee one.
+  const teaX = useTransform(x, (v) => Math.max(v, 0));
+  const coffeeX = useTransform(x, (v) => Math.min(v, 0));
+  const teaRotate = useTransform(x, [0, 260], [0, 7]);
+  const coffeeRotate = useTransform(x, [-260, 0], [-7, 0]);
+  const teaOpacity = useTransform(x, [-260, 0], [0.15, 1]);
+  const coffeeOpacity = useTransform(x, [0, 260], [1, 0.15]);
+  const teaLabel = useTransform(x, [-200, 0, 200], [0, 1, 0.6]);
+  const coffeeLabel = useTransform(x, [-200, 0, 200], [0.6, 1, 0]);
+
+  const choose = (m: Mode) => {
     if (lock.current) return;
     lock.current = true;
+    setLead(m);
     setChosen(m);
     setMode(m);
     const w = typeof window !== "undefined" ? window.innerWidth : 1000;
-    animate(x, dir * w * 0.7, { duration: 1.2, ease: [0.65, 0, 0.35, 1] });
-    animate(scale, 0.72, { duration: 1.2, ease: [0.65, 0, 0.35, 1] });
-    animate(flood, 0.9, { duration: 0.7, ease: "easeOut" });
-    setTimeout(() => navigate({ to: "/masters" }), 2700);
+    animate(x, m === "tea" ? w : -w, { duration: 1.3, ease: [0.65, 0, 0.35, 1] });
+    animate(flood, 0.85, { duration: 0.8, ease: "easeOut" });
+    setTimeout(() => navigate({ to: "/masters" }), 2800);
   };
 
   const sideOf = (clientX: number): Mode => (clientX < window.innerWidth / 2 ? "tea" : "coffee");
@@ -90,155 +93,89 @@ function Splash() {
       e.currentTarget.dataset["side"] = sideOf(e.clientX);
     }
     if (start.current === null || lock.current) return;
-    x.set((e.clientX - start.current) * 0.6);
+    const dx = (e.clientX - start.current) * 0.8;
+    x.set(dx);
+    const next: Mode | null = dx > 2 ? "tea" : dx < -2 ? "coffee" : null;
+    if (next && next !== lead) setLead(next);
   };
   const onUp = (e: React.PointerEvent<HTMLElement>) => {
     if (start.current === null) return;
     const dx = e.clientX - start.current;
     start.current = null;
     const m = modeFromSwipe(dx, 80);
-    if (m) choose(m, dx > 0 ? 1 : -1);
+    if (m) choose(m);
     else if (Math.abs(dx) < 6) choose(sideOf(e.clientX));
-    else animate(x, 0, { type: "spring", stiffness: 300, damping: 30 });
+    else animate(x, 0, { type: "spring", stiffness: 260, damping: 22 });
   };
   const onLeave = (e: React.PointerEvent<HTMLElement>) => {
     delete e.currentTarget.dataset["side"];
   };
-  const stop = {
-    onPointerDown: (e: React.PointerEvent) => e.stopPropagation(),
-    onPointerUp: (e: React.PointerEvent) => e.stopPropagation(),
-  };
 
   return (
     <main
-      className="splash-root relative flex h-[100svh] w-full touch-none flex-col items-center justify-between overflow-hidden px-4 py-[6svh] select-none"
+      className="splash-root splash-black relative flex h-[100svh] w-full touch-none items-center justify-center overflow-hidden select-none"
       onPointerDown={onDown}
       onPointerMove={onMove}
       onPointerUp={onUp}
       onPointerCancel={onUp}
       onPointerLeave={onLeave}
     >
-      <div className="splash-glow pointer-events-none absolute inset-0" />
-      <div className="splash-vignette pointer-events-none absolute inset-0" />
-      <div className="splash-grain pointer-events-none absolute inset-0" />
+      <h1 className="sr-only">Мастер — выберите чай или кофе</h1>
 
-      {/* Frame */}
-      <motion.div
-        className="splash-frame pointer-events-none absolute inset-3 z-10 sm:inset-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6, delay: 0.5 }}
-      />
-
-      {/* Crest */}
-      <motion.header
-        className="pointer-events-none relative z-10 flex flex-col items-center text-center"
-        style={{ opacity: chromeOpacity }}
-      >
+      <div className="grid grid-cols-2 items-center gap-x-6 gap-y-6 px-6 sm:grid-cols-[1fr_auto_1fr] sm:gap-x-12">
         <motion.div
-          {...rise(0.2)}
-          className="flex size-10 items-center justify-center rounded-full border border-gold/60 sm:size-12"
+          className="splash-rh relative order-first col-span-2 justify-self-center sm:order-2 sm:col-span-1"
+          initial={{ opacity: 0, scale: 0.94 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.6, ease: EASE }}
         >
-          <span className="font-display text-xl text-gold italic sm:text-2xl">М</span>
-        </motion.div>
-        <motion.h1
-          {...rise(0.35)}
-          className="mt-3 pl-[0.5em] font-display text-3xl font-medium tracking-[0.5em] uppercase sm:text-5xl"
-        >
-          Мастер
-        </motion.h1>
-        <motion.div {...rise(0.5)} className="mt-2 flex items-center gap-2 sm:gap-3">
-          <span className="splash-rule h-px w-5 sm:w-14" />
-          <span className="text-[0.55rem] whitespace-nowrap tracking-[0.2em] text-gold/90 uppercase sm:text-[0.7rem] sm:tracking-[0.35em]">
-            клуб бариста и чайных мастеров
-          </span>
-          <span className="splash-rule h-px w-5 sm:w-14" />
-        </motion.div>
-      </motion.header>
-
-      {/* Rhombus + labels */}
-      <div className="relative z-10 grid w-full max-w-5xl grid-cols-[1fr_auto_1fr] items-center gap-x-3 px-3 sm:gap-x-8 sm:px-6">
-        <motion.div
-          className="splash-rh relative order-first col-span-3 justify-self-center sm:order-2 sm:col-span-1"
-          style={{ x, rotate: tilt, scale }}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.4, delay: 0.4, ease: EASE }}
-        >
-          <Rhombus teaOpacity={teaOpacity} coffeeOpacity={coffeeOpacity} flood={flood} chosen={chosen} />
-          <button
-            type="button"
-            aria-label="Выбрать чай"
-            onClick={() => choose("tea")}
-            className="absolute inset-0 focus-visible:outline-none"
-            style={{ clipPath: clipLeft }}
-          />
-          <button
-            type="button"
-            aria-label="Выбрать кофе"
-            onClick={() => choose("coffee")}
-            className="absolute inset-0 focus-visible:outline-none"
-            style={{ clipPath: clipRight }}
-          />
-        </motion.div>
-
-        <motion.div className="order-2 justify-self-start sm:order-1 sm:justify-self-end" style={{ opacity: chromeOpacity }}>
-          <Label
-            align="left"
-            eyebrow="Чайное искусство"
-            title="Чай"
-            hint="вправо →"
+          <Half
+            side="tea"
+            x={teaX}
+            rotate={teaRotate}
+            opacity={teaOpacity}
+            flood={chosen === "tea" ? flood : null}
+            onTop={lead === "tea"}
             onChoose={() => choose("tea")}
-            stop={stop}
           />
-        </motion.div>
-        <motion.div className="order-3 sm:hidden" style={{ opacity: chromeOpacity }}>
-          <motion.div
-            {...rise(1)}
-            className="splash-medallion flex size-11 items-center justify-center rounded-full"
-          >
-            <span className="font-display text-base text-gold italic">или</span>
-          </motion.div>
-        </motion.div>
-        <motion.div className="order-4 justify-self-end sm:order-3 sm:justify-self-start" style={{ opacity: chromeOpacity }}>
-          <Label
-            align="right"
-            eyebrow="Кофейное ремесло"
-            title="Кофе"
-            hint="← влево"
+          <Half
+            side="coffee"
+            x={coffeeX}
+            rotate={coffeeRotate}
+            opacity={coffeeOpacity}
+            flood={chosen === "coffee" ? flood : null}
+            onTop={lead === "coffee"}
             onChoose={() => choose("coffee")}
-            stop={stop}
           />
         </motion.div>
-      </div>
 
-      {/* Invitation for masters */}
-      <motion.div
-        className="relative z-10 flex flex-col items-center gap-2.5 text-center"
-        style={{ opacity: chromeOpacity }}
-      >
-        <motion.p {...rise(1.1)} className="font-display text-base text-foreground/80 italic sm:text-lg">
-          Вы мастер своего дела?
-        </motion.p>
-        <motion.div {...rise(1.25)}>
-          <Link
-            to={user ? "/me" : "/auth"}
-            {...stop}
-            className="splash-cta inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-[0.7rem] font-semibold tracking-[0.25em] text-gold uppercase"
-          >
-            Получить именную визитку <ArrowRight className="size-3.5" />
-          </Link>
-        </motion.div>
-        <motion.div {...rise(1.4)}>
-          <Link
-            to="/masters"
-            {...stop}
-            className="text-[0.7rem] tracking-[0.15em] text-foreground/55 underline-offset-4 hover:text-foreground hover:underline"
-          >
-            Сразу к мастерам
-          </Link>
-        </motion.div>
-      </motion.div>
+        <motion.button
+          type="button"
+          onClick={() => choose("tea")}
+          onPointerDown={(e) => e.stopPropagation()}
+          onPointerUp={(e) => e.stopPropagation()}
+          style={{ opacity: teaLabel }}
+          initial={{ opacity: 0, x: -12 }}
+          animate={{ x: 0 }}
+          transition={{ duration: 1.4, delay: 0.6, ease: EASE }}
+          className="splash-word order-2 justify-self-start font-display text-5xl italic sm:order-1 sm:justify-self-end sm:text-7xl"
+        >
+          Чай
+        </motion.button>
+        <motion.button
+          type="button"
+          onClick={() => choose("coffee")}
+          onPointerDown={(e) => e.stopPropagation()}
+          onPointerUp={(e) => e.stopPropagation()}
+          style={{ opacity: coffeeLabel }}
+          initial={{ opacity: 0, x: 12 }}
+          animate={{ x: 0 }}
+          transition={{ duration: 1.4, delay: 0.6, ease: EASE }}
+          className="splash-word order-3 justify-self-end font-display text-5xl italic sm:justify-self-start sm:text-7xl"
+        >
+          Кофе
+        </motion.button>
+      </div>
 
       <AnimatePresence>
         {chosen && (
@@ -247,7 +184,7 @@ function Splash() {
             data-kind={chosen}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
+            transition={{ delay: 0.9, duration: 0.5 }}
           >
             <BrewLoader mode={chosen} />
           </motion.div>
@@ -257,165 +194,159 @@ function Splash() {
   );
 }
 
-function Rhombus({
-  teaOpacity,
-  coffeeOpacity,
+/** A triangle "cup" with liquid sloshing inside. Tea is the left half, coffee the right. */
+function Half({
+  side,
+  x,
+  rotate,
+  opacity,
   flood,
-  chosen,
+  onTop,
+  onChoose,
 }: {
-  teaOpacity: ReturnType<typeof useMotionValue<number>>;
-  coffeeOpacity: ReturnType<typeof useMotionValue<number>>;
-  flood: ReturnType<typeof useMotionValue<number>>;
-  chosen: Mode | null;
+  side: Mode;
+  x: MotionValue<number>;
+  rotate: MotionValue<number>;
+  opacity: MotionValue<number>;
+  flood: MotionValue<number> | null;
+  onTop: boolean;
+  onChoose: () => void;
 }) {
-  const splash = {
-    animate: { scale: [1, 1.04, 1], y: [0, -8, 0] },
-    transition: { duration: 7, repeat: Infinity, ease: "easeInOut" as const },
-    style: { transformBox: "fill-box" as const, transformOrigin: "center" },
-  };
+  const tea = side === "tea";
+  const tri = tea ? TEA_TRI : COFFEE_TRI;
+  const id = `cup-${side}`;
+  const clip = tea ? "polygon(0 50%, 100% 0, 100% 100%)" : "polygon(0 0, 100% 50%, 0 100%)";
+
   return (
-    <svg viewBox={`${-PAD} ${-PAD} ${VB_W} ${VB_H}`} className="block h-auto w-full overflow-visible" aria-hidden>
-      <defs>
-        <clipPath id="rh-left">
-          <polygon points={LEFT} />
-        </clipPath>
-        <clipPath id="rh-right">
-          <polygon points={RIGHT} />
-        </clipPath>
-        <clipPath id="rh-all">
-          <polygon points={RHOMB} />
-        </clipPath>
-      </defs>
+    <motion.div
+      className={tea ? "absolute inset-y-0 left-0 w-1/2" : "absolute inset-y-0 right-0 w-1/2"}
+      style={{
+        x,
+        rotate,
+        opacity,
+        zIndex: onTop ? 2 : 1,
+        transformOrigin: tea ? "100% 50%" : "0% 50%",
+      }}
+    >
+      <svg
+        viewBox={`0 0 ${HW} ${HH}`}
+        className="rh-half block size-full overflow-visible"
+        data-side={side}
+        aria-hidden
+      >
+        <defs>
+          <clipPath id={`${id}-clip`}>
+            <polygon points={tri} />
+          </clipPath>
+          <linearGradient id={`${id}-body`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" className={tea ? "liq-tea-top" : "liq-coffee-top"} />
+            <stop offset="1" className={tea ? "liq-tea-bottom" : "liq-coffee-bottom"} />
+          </linearGradient>
+        </defs>
 
-      {/* Splashing tea — left half */}
-      <motion.g className="rh-half" data-side="tea" clipPath="url(#rh-left)" style={{ opacity: teaOpacity }}>
-        <rect x={0} y={0} width={W / 2} height={H} className="fill-background" />
-        <motion.image
-          href={splashTea}
-          x={-30}
-          y={-20}
-          width={W / 2 + 60}
-          height={H + 40}
-          preserveAspectRatio="xMaxYMid slice"
-          {...splash}
-        />
-      </motion.g>
+        <g clipPath={`url(#${id}-clip)`}>
+          <polygon points={tri} className="cup-glass" />
 
-      {/* Splashing coffee — right half */}
-      <motion.g className="rh-half" data-side="coffee" clipPath="url(#rh-right)" style={{ opacity: coffeeOpacity }}>
-        <rect x={W / 2} y={0} width={W / 2} height={H} className="fill-background" />
-        <motion.image
-          href={splashCoffee}
-          x={W / 2 - 30}
-          y={-20}
-          width={W / 2 + 60}
-          height={H + 40}
-          preserveAspectRatio="xMinYMid slice"
-          {...splash}
-          transition={{ ...splash.transition, delay: 1.5 }}
-        />
-      </motion.g>
+          {/* Liquid sloshing like in a cup */}
+          <motion.g
+            animate={{ rotate: tea ? [-7, 6, -7] : [6, -7, 6] }}
+            transition={{ duration: tea ? 3.4 : 3.8, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: `${HW / 2}px ${LEVEL}px`, transformBox: "view-box" }}
+          >
+            <motion.g
+              animate={{ y: [0, -14, 0] }}
+              transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+            >
+              {/* back wave */}
+              <motion.path
+                d={wavePath(LEVEL - 18, 22, 350)}
+                className={tea ? "liq-tea-back" : "liq-coffee-back"}
+                animate={{ x: [0, -350] }}
+                transition={{ duration: 4.2, repeat: Infinity, ease: "linear" }}
+              />
+              {/* crema for coffee */}
+              {!tea && (
+                <motion.path
+                  d={wavePath(LEVEL - 4, 18, 280)}
+                  className="liq-crema"
+                  animate={{ x: [-280, 0] }}
+                  transition={{ duration: 3.2, repeat: Infinity, ease: "linear" }}
+                />
+              )}
+              {/* front body */}
+              <motion.path
+                d={wavePath(LEVEL + (tea ? 0 : 22), 26, 420)}
+                fill={`url(#${id}-body)`}
+                animate={{ x: [-420, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              />
+              {/* surface shine */}
+              <motion.path
+                d={wavePath(LEVEL + (tea ? 6 : 28), 26, 420, -700, 1400, LEVEL + (tea ? 6 : 28)).replace(/ L.*$/, "")}
+                className={tea ? "liq-shine-tea" : "liq-shine-coffee"}
+                fill="none"
+                strokeWidth={5}
+                strokeLinecap="round"
+                animate={{ x: [-420, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              />
 
-      {/* Colour flood when chosen */}
-      <motion.polygon
-        points={RHOMB}
-        className={chosen === "tea" ? "rh-flood-tea" : "rh-flood-coffee"}
-        style={{ opacity: flood }}
-      />
+              {tea &&
+                [
+                  { cx: 430, d: 0, r: -20 },
+                  { cx: 560, d: 1.1, r: 35 },
+                ].map((l) => (
+                  <motion.path
+                    key={l.cx}
+                    d="M0 0C10 -18 34 -22 52 -14C38 4 16 8 0 0Z"
+                    className="liq-leaf"
+                    initial={{ x: l.cx, y: LEVEL - 8, rotate: l.r }}
+                    animate={{ y: [LEVEL - 8, LEVEL - 26, LEVEL - 8], rotate: [l.r, l.r + 18, l.r] }}
+                    transition={{ duration: 3, delay: l.d, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                ))}
+            </motion.g>
+          </motion.g>
 
-      {/* Gold line work */}
-      <g className="rh-lines" fill="none" strokeLinejoin="round" strokeLinecap="round">
+          {/* Rising bubbles */}
+          {[0, 1, 2, 3, 4].map((i) => {
+            const cx = tea ? 420 + i * 55 : 120 + i * 60;
+            return (
+              <motion.circle
+                key={i}
+                cx={cx}
+                r={6 + (i % 3) * 3}
+                className={tea ? "liq-bubble-tea" : "liq-bubble-coffee"}
+                initial={{ cy: 900, opacity: 0 }}
+                animate={{ cy: [900, LEVEL + 60], opacity: [0, 0.8, 0] }}
+                transition={{ duration: 2.6 + i * 0.35, delay: i * 0.6, repeat: Infinity, ease: "easeIn" }}
+              />
+            );
+          })}
+
+          {flood && <motion.polygon points={tri} className={tea ? "rh-flood-tea" : "rh-flood-coffee"} style={{ opacity: flood }} />}
+        </g>
+
+        {/* Gold outline travels with the triangle */}
         <motion.polygon
-          points={RHOMB}
+          points={tri}
+          className="cup-outline"
+          fill="none"
           strokeWidth={3}
+          strokeLinejoin="round"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
-          transition={{ duration: 2.2, delay: 0.3, ease: EASE }}
+          transition={{ duration: 2, delay: 0.2, ease: EASE }}
         />
-        <polygon points={RHOMB_INNER} strokeWidth={1.2} opacity={0.45} />
-        <line x1={W / 2} y1={0} x2={W / 2} y2={H} strokeWidth={1.6} opacity={0.7} />
-        {/* travelling glint */}
-        <motion.polygon
-          points={RHOMB}
-          pathLength={1}
-          strokeWidth={4}
-          className="rh-glint"
-          strokeDasharray="0.06 0.94"
-          animate={{ strokeDashoffset: [0, -1] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "linear", delay: 2.5 }}
-        />
-      </g>
+      </svg>
 
-      {/* Ornaments, after the reference: sparkles above, orbits below */}
-      <g className="rh-ornament" fill="none" strokeWidth={2}>
-        <Sparkle cx={W / 2} cy={-62} r={22} />
-        <Sparkle cx={W / 2 - 230} cy={-30} r={13} />
-        <Sparkle cx={W / 2 + 230} cy={-30} r={13} />
-        {[-150, -95, 95, 150].map((dx) => (
-          <circle key={dx} cx={W / 2 + dx} cy={-70 + Math.abs(dx) * 0.2} r={3} className="rh-dot" />
-        ))}
-        <circle cx={140} cy={H + 50} r={5} className="rh-dot" />
-        <circle cx={180} cy={H + 50} r={8} className="rh-dot" />
-        <circle cx={240} cy={H + 50} r={20} />
-        <line x1={212} y1={H + 22} x2={268} y2={H + 78} />
-        <circle cx={W - 240} cy={H + 50} r={16} />
-        <circle cx={W - 180} cy={H + 50} r={14} className="rh-dot" />
-        <path
-          d={`M${W / 2 - 70} ${H + 60} l23 -8 l23 8 l24 -8 l24 8 l23 -8 l23 8`}
-          strokeWidth={2.4}
-        />
-      </g>
-    </svg>
-  );
-}
-
-function Sparkle({ cx, cy, r }: { cx: number; cy: number; r: number }) {
-  return (
-    <path
-      d={`M${cx} ${cy - r}V${cy + r}M${cx - r} ${cy}H${cx + r}M${cx - r * 0.45} ${cy - r * 0.45}L${cx + r * 0.45} ${cy + r * 0.45}M${cx + r * 0.45} ${cy - r * 0.45}L${cx - r * 0.45} ${cy + r * 0.45}`}
-      strokeLinecap="round"
-    />
-  );
-}
-
-function Label({
-  align,
-  eyebrow,
-  title,
-  hint,
-  onChoose,
-  stop,
-}: {
-  align: "left" | "right";
-  eyebrow: string;
-  title: string;
-  hint: string;
-  onChoose: () => void;
-  stop: { onPointerDown: (e: React.PointerEvent) => void; onPointerUp: (e: React.PointerEvent) => void };
-}) {
-  const right = align === "right";
-  return (
-    <motion.button
-      {...rise(right ? 0.95 : 0.85)}
-      type="button"
-      {...stop}
-      onClick={onChoose}
-      data-choice={right ? "coffee" : "tea"}
-      className={
-        right
-          ? "group flex flex-col items-end text-right sm:items-start sm:text-left"
-          : "group flex flex-col items-start text-left sm:items-end sm:text-right"
-      }
-    >
-      <span className="text-[0.55rem] whitespace-nowrap tracking-[0.22em] text-gold uppercase sm:text-[0.7rem] sm:tracking-[0.35em]">
-        {eyebrow}
-      </span>
-      <span className="mt-1 font-display text-5xl leading-none font-medium italic transition-colors group-hover:text-gold sm:text-7xl">
-        {title}
-      </span>
-      <span className="mt-2 text-[0.6rem] tracking-[0.2em] text-foreground/50 uppercase sm:text-[0.65rem]">
-        Войти <span className="tracking-normal normal-case">· {hint}</span>
-      </span>
-    </motion.button>
+      <button
+        type="button"
+        aria-label={tea ? "Выбрать чай" : "Выбрать кофе"}
+        onClick={onChoose}
+        className="absolute inset-0 focus-visible:outline-none"
+        style={{ clipPath: clip }}
+      />
+    </motion.div>
   );
 }
