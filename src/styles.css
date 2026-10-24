@@ -299,6 +299,60 @@
   background: oklch(0.09 0.004 60 / 92%);
   backdrop-filter: blur(4px);
 }
+.splash-veil[data-kind="tea"] {
+  background: radial-gradient(circle at 50% 50%, oklch(0.28 0.07 155 / 96%), oklch(0.1 0.02 160 / 98%) 70%);
+}
+.splash-veil[data-kind="coffee"] {
+  background: radial-gradient(circle at 50% 50%, oklch(0.27 0.05 50 / 96%), oklch(0.09 0.012 45 / 98%) 70%);
+}
+.splash-glow {
+  background:
+    radial-gradient(40% 45% at 28% 52%, oklch(0.45 0.12 150 / 14%), transparent 70%),
+    radial-gradient(40% 45% at 72% 52%, oklch(0.5 0.1 55 / 14%), transparent 70%);
+}
+
+/* Rhombus on the entry screen */
+.rh-lines,
+.rh-ornament {
+  stroke: oklch(0.85 0.1 85 / 85%);
+}
+.rh-dot {
+  fill: oklch(0.85 0.1 85 / 85%);
+  stroke: none;
+}
+.rh-glint {
+  stroke: oklch(0.97 0.05 90);
+  filter: drop-shadow(0 0 6px oklch(0.9 0.1 85));
+}
+.rh-flood-tea {
+  fill: oklch(0.55 0.13 145);
+}
+.rh-flood-coffee {
+  fill: oklch(0.42 0.08 50);
+}
+.rh-half {
+  transition: filter 0.5s ease;
+}
+.splash-root[data-side="tea"] .rh-half[data-side="coffee"],
+.splash-root[data-side="coffee"] .rh-half[data-side="tea"] {
+  filter: brightness(0.5) saturate(0.6);
+}
+
+/* Cursor: a tea leaf over the tea side, a coffee bean over the coffee side */
+.splash-root[data-side="tea"],
+.splash-root[data-side="tea"] * {
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 64 64'><path d='M13 51C10 31 25 12 53 11C54 36 37 53 13 51Z' fill='%234f9a5c' stroke='%23ead18c' stroke-width='3' stroke-linejoin='round'/><path d='M13 51C25 39 35 29 47 17M13 51L7 57' fill='none' stroke='%23ead18c' stroke-width='3' stroke-linecap='round'/></svg>")
+      16 16,
+    pointer;
+}
+.splash-root[data-side="coffee"],
+.splash-root[data-side="coffee"] * {
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 64 64'><g transform='rotate(-32 32 32)'><ellipse cx='32' cy='32' rx='16.5' ry='23' fill='%236b3f22' stroke='%23dca468' stroke-width='3'/><path d='M32 9.5C23 19 41 43 32 54.5' fill='none' stroke='%23dca468' stroke-width='3' stroke-linecap='round'/></g></svg>")
+      16 16,
+    pointer;
+}
 
 /* ---------- Printed business card (paper, 90×50 mm) ---------- */
 .paper-card {
