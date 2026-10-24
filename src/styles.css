@@ -321,32 +321,75 @@
     radial-gradient(40% 45% at 72% 52%, oklch(0.5 0.1 55 / 14%), transparent 70%);
 }
 
-/* Rhombus on the entry screen */
+/* Rhombus on the entry screen: pure black, two triangle "cups" with sloshing liquid */
+.splash-black {
+  background: oklch(0 0 0);
+  color: oklch(0.95 0.015 85);
+}
 .splash-rh {
-  width: min(86vw, 520px, calc((100svh - 430px) * 1.32));
+  width: min(84vw, 440px);
+  aspect-ratio: 1.4;
 }
 @media (min-width: 640px) {
   .splash-rh {
-    width: min(54vw, 660px, calc((100svh - 300px) * 1.32));
+    width: min(50vw, 620px, calc((100svh - 120px) * 1.4));
   }
 }
-.rh-lines,
-.rh-ornament {
+.splash-word {
+  transition: color 0.4s ease;
+}
+.splash-word:hover {
+  color: oklch(0.85 0.1 85);
+}
+.cup-glass {
+  fill: oklch(1 0 0 / 3%);
+}
+.cup-outline {
   stroke: oklch(0.85 0.1 85 / 85%);
 }
-.rh-dot {
-  fill: oklch(0.85 0.1 85 / 85%);
-  stroke: none;
+.liq-tea-top {
+  stop-color: oklch(0.8 0.17 128);
 }
-.rh-glint {
-  stroke: oklch(0.97 0.05 90);
-  filter: drop-shadow(0 0 6px oklch(0.9 0.1 85));
+.liq-tea-bottom {
+  stop-color: oklch(0.42 0.12 150);
+}
+.liq-tea-back {
+  fill: oklch(0.62 0.15 140 / 55%);
+}
+.liq-shine-tea {
+  stroke: oklch(0.93 0.13 115 / 75%);
+}
+.liq-leaf {
+  fill: oklch(0.55 0.15 145);
+  stroke: oklch(0.85 0.15 125);
+  stroke-width: 2;
+}
+.liq-bubble-tea {
+  fill: oklch(0.95 0.1 115 / 60%);
+}
+.liq-coffee-top {
+  stop-color: oklch(0.4 0.07 50);
+}
+.liq-coffee-bottom {
+  stop-color: oklch(0.16 0.03 40);
+}
+.liq-coffee-back {
+  fill: oklch(0.32 0.06 45 / 70%);
+}
+.liq-crema {
+  fill: oklch(0.72 0.1 65);
+}
+.liq-shine-coffee {
+  stroke: oklch(0.86 0.08 75 / 70%);
+}
+.liq-bubble-coffee {
+  fill: oklch(0.85 0.08 75 / 55%);
 }
 .rh-flood-tea {
-  fill: oklch(0.55 0.13 145);
+  fill: oklch(0.6 0.15 140);
 }
 .rh-flood-coffee {
-  fill: oklch(0.42 0.08 50);
+  fill: oklch(0.4 0.08 50);
 }
 .rh-half {
   transition: filter 0.5s ease;
