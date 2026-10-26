@@ -5,7 +5,43 @@ import { useEffect, useRef } from "react";
  * Поверхность — цепочка пружин (spring + damping); курсор работает как магнит (феррофлюид).
  * Холст обрезан по треугольнику через CSS clip-path.
  */
-export function LiquidCup({ className = "", level = 0.42 }: { className?: string; level?: number }) {
+type Kind = "tea" | "coffee";
+
+const PALETTE: Record<Kind, { stops: string[]; glow: string; magnet: string; line: string; shadow: string; bg: string }> = {
+  coffee: {
+    stops: ["hsl(32 70% 58%)", "hsl(26 62% 40%)", "hsl(20 58% 20%)", "hsl(16 50% 7%)"],
+    glow: "35 90% 70%",
+    magnet: "30 95% 65%",
+    line: pal.line,
+    shadow: pal.shadow,
+    bg: "hsl(20 30% 4%)",
+  },
+  tea: {
+    stops: ["hsl(78 70% 62%)", "hsl(95 55% 42%)", "hsl(130 50% 22%)", "hsl(150 45% 7%)"],
+    glow: "75 90% 70%",
+    magnet: "80 95% 65%",
+    line: "hsla(70 95% 85% / 0.75)",
+    shadow: "hsla(75 95% 70% / 0.8)",
+    bg: "hsl(150 25% 4%)",
+  },
+};
+
+export function LiquidCup({
+  className = "",
+  level = 0.42,
+  kind = "coffee",
+  clip = "polygon(0 0, 100% 0, 50% 100%)",
+  outline = "0.5,0.5 99.5,0.5 50,99.3",
+}: {
+  className?: string;
+  level?: number;
+  kind?: Kind;
+  /** CSS clip-path polygon for the canvas */
+  clip?: string;
+  /** Outline points in a 0..100 box; empty string hides it */
+  outline?: string;
+}) {
+  const pal = PALETTE[kind];
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -121,10 +157,10 @@ export function LiquidCup({ className = "", level = 0.42 }: { className?: string
 
       // тело: от карамельной пенки к глубокому эспрессо
       const body = ctx.createLinearGradient(0, top, 0, H);
-      body.addColorStop(0, "hsl(32 70% 58%)");
-      body.addColorStop(0.08, "hsl(26 62% 40%)");
-      body.addColorStop(0.45, "hsl(20 58% 20%)");
-      body.addColorStop(1, "hsl(16 50% 7%)");
+      body.addColorStop(0, pal.stops[0]!);
+      body.addColorStop(0.08, pal.stops[1]!);
+      body.addColorStop(0.45, pal.stops[2]!);
+      body.addColorStop(1, pal.stops[3]!);
       ctx.fillStyle = body;
       ctx.fill(path);
 
@@ -132,15 +168,15 @@ export function LiquidCup({ className = "", level = 0.42 }: { className?: string
       ctx.save();
       ctx.clip(path);
       const glow = ctx.createRadialGradient(W * 0.35, base + H * 0.08, 0, W * 0.35, base + H * 0.08, W * 0.5);
-      glow.addColorStop(0, "hsla(35 90% 70% / 0.35)");
-      glow.addColorStop(1, "hsla(35 90% 70% / 0)");
+      glow.addColorStop(0, `hsla(${pal.glow} / 0.35)`);
+      glow.addColorStop(1, `hsla(${pal.glow} / 0)`);
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, W, H);
       // точка магнита — тёплое свечение
       if (mouse.power > 0.02) {
         const mg = ctx.createRadialGradient(mouse.x, base, 0, mouse.x, base, W * 0.2);
-        mg.addColorStop(0, `hsla(30 95% 65% / ${0.35 * mouse.power})`);
-        mg.addColorStop(1, "hsla(30 95% 65% / 0)");
+        mg.addColorStop(0, `hsla(${pal.magnet} / ${0.35 * mouse.power})`);
+        mg.addColorStop(1, `hsla(${pal.magnet} / 0)`);
         ctx.fillStyle = mg;
         ctx.fillRect(0, 0, W, H);
       }
@@ -154,9 +190,9 @@ export function LiquidCup({ className = "", level = 0.42 }: { className?: string
         const my = (P(i)[1] + P(i + 1)[1]) / 2;
         ctx.quadraticCurveTo(P(i)[0], P(i)[1], mx, my);
       }
-      ctx.strokeStyle = "hsla(38 95% 82% / 0.75)";
+      ctx.strokeStyle = pal.line;
       ctx.lineWidth = 1.6;
-      ctx.shadowColor = "hsla(38 95% 70% / 0.8)";
+      ctx.shadowColor = pal.shadow;
       ctx.shadowBlur = 10;
       ctx.stroke();
       ctx.shadowBlur = 0;
@@ -169,18 +205,20 @@ export function LiquidCup({ className = "", level = 0.42 }: { className?: string
       window.removeEventListener("pointermove", onMove);
       document.removeEventListener("pointerleave", onLeave);
     };
-  }, [level]);
+  }, [level, pal]);
 
   return (
     <div className={`relative ${className}`} aria-hidden>
       <canvas
         ref={ref}
         className="block size-full"
-        style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)", background: "hsl(20 30% 4%)" }}
+        style={{ clipPath: clip, background: pal.bg }}
       />
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 size-full">
-        <polygon points="0.5,0.5 99.5,0.5 50,99.3" fill="none" stroke="hsl(36 60% 60%)" strokeWidth="0.6" vectorEffect="non-scaling-stroke" />
-      </svg>
+      {outline && (
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 size-full">
+          <polygon points={outline} fill="none" stroke="hsl(40 60% 65%)" strokeWidth="1.2" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+        </svg>
+      )}
     </div>
   );
 }
