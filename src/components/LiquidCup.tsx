@@ -70,22 +70,22 @@ export function LiquidCup({ className = "", level = 0.42 }: { className?: string
         const yDist = Math.max(0, base - mouse.y);
         const pull = -Math.min(H * 0.32, yDist * 0.75 + 18) * g * mouse.power;
         // пружина к цели + затухание
-        v[i] += (pull - h[i]) * 0.02;
-        v[i] *= 0.9;
+        v[i] = v[i]! + (pull - h[i]!) * 0.02;
+        v[i] = v[i]! * 0.9;
       }
       // распространение волн между соседями
       for (let k = 0; k < 2; k++) {
         for (let i = 1; i < N - 1; i++) {
-          v[i] += (h[i - 1] + h[i + 1] - 2 * h[i]) * 0.08;
+          v[i] = v[i]! + (h[i - 1]! + h[i + 1]! - 2 * h[i]!) * 0.08;
         }
       }
       // импульс от резкого движения мыши
       if (mouse.power > 0.2 && Math.abs(mouse.vx) > 2) {
         const idx = Math.round(Math.max(0, Math.min(N - 1, mouse.x / dx)));
-        v[idx] += Math.max(-6, Math.min(6, mouse.vx)) * 0.15;
+        v[idx] = v[idx]! + Math.max(-6, Math.min(6, mouse.vx)) * 0.15;
       }
       mouse.vx *= 0.8;
-      for (let i = 0; i < N; i++) h[i] += v[i];
+      for (let i = 0; i < N; i++) h[i] = h[i]! + v[i]!;
 
       draw(base, dx);
       raf = requestAnimationFrame(step);
@@ -97,24 +97,25 @@ export function LiquidCup({ className = "", level = 0.42 }: { className?: string
         Math.sin(x * 0.018 + t * 1.6) * H * 0.012 +
         Math.sin(x * 0.041 - t * 2.3) * H * 0.006 +
         Math.sin(t * 0.9) * H * 0.008 * ((x / W) * 2 - 1); // покачивание чашки
-      return base + idle + h[i];
+      return base + idle + h[i]!;
     };
 
     const draw = (base: number, dx: number) => {
       ctx.clearRect(0, 0, W, H);
       const pts: [number, number][] = [];
+      const P = (i: number) => pts[i]!;
       for (let i = 0; i < N; i++) pts.push([i * dx, surfaceY(i, base, dx)]);
       const top = Math.min(...pts.map((p) => p[1]));
 
       const path = new Path2D();
       path.moveTo(0, H);
-      path.lineTo(pts[0][0], pts[0][1]);
+      path.lineTo(P(0)[0], P(0)[1]);
       for (let i = 1; i < N - 1; i++) {
-        const mx = (pts[i][0] + pts[i + 1][0]) / 2;
-        const my = (pts[i][1] + pts[i + 1][1]) / 2;
-        path.quadraticCurveTo(pts[i][0], pts[i][1], mx, my);
+        const mx = (P(i)[0] + P(i + 1)[0]) / 2;
+        const my = (P(i)[1] + P(i + 1)[1]) / 2;
+        path.quadraticCurveTo(P(i)[0], P(i)[1], mx, my);
       }
-      path.lineTo(pts[N - 1][0], pts[N - 1][1]);
+      path.lineTo(P(N - 1)[0], P(N - 1)[1]);
       path.lineTo(W, H);
       path.closePath();
 
@@ -147,11 +148,11 @@ export function LiquidCup({ className = "", level = 0.42 }: { className?: string
 
       // глянцевая линия поверхности
       ctx.beginPath();
-      ctx.moveTo(pts[0][0], pts[0][1]);
+      ctx.moveTo(P(0)[0], P(0)[1]);
       for (let i = 1; i < N - 1; i++) {
-        const mx = (pts[i][0] + pts[i + 1][0]) / 2;
-        const my = (pts[i][1] + pts[i + 1][1]) / 2;
-        ctx.quadraticCurveTo(pts[i][0], pts[i][1], mx, my);
+        const mx = (P(i)[0] + P(i + 1)[0]) / 2;
+        const my = (P(i)[1] + P(i + 1)[1]) / 2;
+        ctx.quadraticCurveTo(P(i)[0], P(i)[1], mx, my);
       }
       ctx.strokeStyle = "hsla(38 95% 82% / 0.75)";
       ctx.lineWidth = 1.6;
