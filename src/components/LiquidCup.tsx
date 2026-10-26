@@ -12,8 +12,8 @@ const PALETTE: Record<Kind, { stops: string[]; glow: string; magnet: string; lin
     stops: ["hsl(32 70% 58%)", "hsl(26 62% 40%)", "hsl(20 58% 20%)", "hsl(16 50% 7%)"],
     glow: "35 90% 70%",
     magnet: "30 95% 65%",
-    line: pal.line,
-    shadow: pal.shadow,
+    line: "hsla(38 95% 82% / 0.75)",
+    shadow: "hsla(38 95% 70% / 0.8)",
     bg: "hsl(20 30% 4%)",
   },
   tea: {
