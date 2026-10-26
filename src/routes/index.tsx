@@ -35,22 +35,6 @@ export const Route = createFileRoute("/")({
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-/* One half of the rhombus, in its own SVG units. */
-const HW = 700;
-const HH = 1000;
-const LEVEL = 500; // liquid fills half the triangle
-const TEA_TRI = `0,${HH / 2} ${HW},0 ${HW},${HH}`;
-const COFFEE_TRI = `0,0 ${HW},${HH / 2} 0,${HH}`;
-
-/** Wavy liquid surface from x0 to x1, closed down to the bottom. */
-function wavePath(y: number, amp: number, period: number, x0 = -700, x1 = 1400, bottom = HH + 200) {
-  let d = `M${x0} ${y}`;
-  for (let x = x0; x < x1; x += period) {
-    d += ` Q${x + period / 4} ${y - amp} ${x + period / 2} ${y} T${x + period} ${y}`;
-  }
-  return `${d} L${x1} ${bottom} L${x0} ${bottom} Z`;
-}
-
 function Splash() {
   const { setMode } = useMode();
   const navigate = useNavigate();
@@ -131,7 +115,24 @@ function Splash() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.6, ease: EASE }}
         >
-          <LiquidCup className="h-[46svh] max-h-[440px] w-[min(52vw,420px)]" />
+          <Half
+            side="tea"
+            x={teaX}
+            rotate={teaRotate}
+            opacity={teaOpacity}
+            flood={chosen === "tea" ? flood : null}
+            onTop={lead === "tea"}
+            onChoose={() => choose("tea")}
+          />
+          <Half
+            side="coffee"
+            x={coffeeX}
+            rotate={coffeeRotate}
+            opacity={coffeeOpacity}
+            flood={chosen === "coffee" ? flood : null}
+            onTop={lead === "coffee"}
+            onChoose={() => choose("coffee")}
+          />
         </motion.div>
 
         <motion.button
@@ -179,7 +180,7 @@ function Splash() {
   );
 }
 
-/** A triangle "cup" with liquid sloshing inside. Tea is the left half, coffee the right. */
+/** One triangle of the rhombus with live liquid inside. Tea is the left half, coffee the right. */
 function Half({
   side,
   x,
@@ -198,13 +199,13 @@ function Half({
   onChoose: () => void;
 }) {
   const tea = side === "tea";
-  const tri = tea ? TEA_TRI : COFFEE_TRI;
-  const id = `cup-${side}`;
   const clip = tea ? "polygon(0 50%, 100% 0, 100% 100%)" : "polygon(0 0, 100% 50%, 0 100%)";
+  const outline = tea ? "0.6,50 99.4,0.6 99.4,99.4" : "0.6,0.6 99.4,50 0.6,99.4";
 
   return (
     <motion.div
-      className={tea ? "absolute inset-y-0 left-0 w-1/2" : "absolute inset-y-0 right-0 w-1/2"}
+      className={tea ? "rh-half absolute inset-y-0 left-0 w-1/2" : "rh-half absolute inset-y-0 right-0 w-1/2"}
+      data-side={side}
       style={{
         x,
         rotate,
@@ -213,118 +214,13 @@ function Half({
         transformOrigin: tea ? "100% 50%" : "0% 50%",
       }}
     >
-      <svg
-        viewBox={`0 0 ${HW} ${HH}`}
-        className="rh-half block size-full overflow-visible"
-        data-side={side}
-        aria-hidden
-      >
-        <defs>
-          <clipPath id={`${id}-clip`}>
-            <polygon points={tri} />
-          </clipPath>
-          <linearGradient id={`${id}-body`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" className={tea ? "liq-tea-top" : "liq-coffee-top"} />
-            <stop offset="1" className={tea ? "liq-tea-bottom" : "liq-coffee-bottom"} />
-          </linearGradient>
-        </defs>
-
-        <g clipPath={`url(#${id}-clip)`}>
-          <polygon points={tri} className="cup-glass" />
-
-          {/* Liquid sloshing like in a cup */}
-          <motion.g
-            animate={{ rotate: tea ? [-7, 6, -7] : [6, -7, 6] }}
-            transition={{ duration: tea ? 3.4 : 3.8, repeat: Infinity, ease: "easeInOut" }}
-            style={{ transformOrigin: `${HW / 2}px ${LEVEL}px`, transformBox: "view-box" }}
-          >
-            <motion.g
-              animate={{ y: [0, -14, 0] }}
-              transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-            >
-              {/* back wave */}
-              <motion.path
-                d={wavePath(LEVEL - 18, 22, 350)}
-                className={tea ? "liq-tea-back" : "liq-coffee-back"}
-                animate={{ x: [0, -350] }}
-                transition={{ duration: 4.2, repeat: Infinity, ease: "linear" }}
-              />
-              {/* crema for coffee */}
-              {!tea && (
-                <motion.path
-                  d={wavePath(LEVEL - 4, 18, 280)}
-                  className="liq-crema"
-                  animate={{ x: [-280, 0] }}
-                  transition={{ duration: 3.2, repeat: Infinity, ease: "linear" }}
-                />
-              )}
-              {/* front body */}
-              <motion.path
-                d={wavePath(LEVEL + (tea ? 0 : 22), 26, 420)}
-                fill={`url(#${id}-body)`}
-                animate={{ x: [-420, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              />
-              {/* surface shine */}
-              <motion.path
-                d={wavePath(LEVEL + (tea ? 6 : 28), 26, 420, -700, 1400, LEVEL + (tea ? 6 : 28)).replace(/ L.*$/, "")}
-                className={tea ? "liq-shine-tea" : "liq-shine-coffee"}
-                fill="none"
-                strokeWidth={5}
-                strokeLinecap="round"
-                animate={{ x: [-420, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              />
-
-              {tea &&
-                [
-                  { cx: 430, d: 0, r: -20 },
-                  { cx: 560, d: 1.1, r: 35 },
-                ].map((l) => (
-                  <motion.path
-                    key={l.cx}
-                    d="M0 0C10 -18 34 -22 52 -14C38 4 16 8 0 0Z"
-                    className="liq-leaf"
-                    initial={{ x: l.cx, y: LEVEL - 8, rotate: l.r }}
-                    animate={{ y: [LEVEL - 8, LEVEL - 26, LEVEL - 8], rotate: [l.r, l.r + 18, l.r] }}
-                    transition={{ duration: 3, delay: l.d, repeat: Infinity, ease: "easeInOut" }}
-                  />
-                ))}
-            </motion.g>
-          </motion.g>
-
-          {/* Rising bubbles */}
-          {[0, 1, 2, 3, 4].map((i) => {
-            const cx = tea ? 420 + i * 55 : 120 + i * 60;
-            return (
-              <motion.circle
-                key={i}
-                cx={cx}
-                r={6 + (i % 3) * 3}
-                className={tea ? "liq-bubble-tea" : "liq-bubble-coffee"}
-                initial={{ cy: 900, opacity: 0 }}
-                animate={{ cy: [900, LEVEL + 60], opacity: [0, 0.8, 0] }}
-                transition={{ duration: 2.6 + i * 0.35, delay: i * 0.6, repeat: Infinity, ease: "easeIn" }}
-              />
-            );
-          })}
-
-          {flood && <motion.polygon points={tri} className={tea ? "rh-flood-tea" : "rh-flood-coffee"} style={{ opacity: flood }} />}
-        </g>
-
-        {/* Gold outline travels with the triangle */}
-        <motion.polygon
-          points={tri}
-          className="cup-outline"
-          fill="none"
-          strokeWidth={3}
-          strokeLinejoin="round"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 2, delay: 0.2, ease: EASE }}
+      <LiquidCup kind={side} clip={clip} outline={outline} level={0.5} className="size-full" />
+      {flood && (
+        <motion.div
+          className={tea ? "rh-flood-tea-bg absolute inset-0" : "rh-flood-coffee-bg absolute inset-0"}
+          style={{ opacity: flood, clipPath: clip }}
         />
-      </svg>
-
+      )}
       <button
         type="button"
         aria-label={tea ? "Выбрать чай" : "Выбрать кофе"}
