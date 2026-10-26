@@ -10,6 +10,7 @@ import {
 } from "motion/react";
 import { modeFromSwipe, useMode, type Mode } from "@/lib/mode";
 import { BrewLoader } from "@/components/BrewLoader";
+import { LiquidCup } from "@/components/LiquidCup";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -130,24 +131,7 @@ function Splash() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.6, ease: EASE }}
         >
-          <Half
-            side="tea"
-            x={teaX}
-            rotate={teaRotate}
-            opacity={teaOpacity}
-            flood={chosen === "tea" ? flood : null}
-            onTop={lead === "tea"}
-            onChoose={() => choose("tea")}
-          />
-          <Half
-            side="coffee"
-            x={coffeeX}
-            rotate={coffeeRotate}
-            opacity={coffeeOpacity}
-            flood={chosen === "coffee" ? flood : null}
-            onTop={lead === "coffee"}
-            onChoose={() => choose("coffee")}
-          />
+          <LiquidCup className="h-[46svh] max-h-[440px] w-[min(52vw,420px)]" />
         </motion.div>
 
         <motion.button
