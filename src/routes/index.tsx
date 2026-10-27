@@ -106,7 +106,7 @@ function Splash() {
           eyebrow="Кофейное ремесло"
           title="Кофе"
           sub="бариста и обжарщики"
-          hint="← влево"
+          hint="←"
           onChoose={() => choose("coffee")}
           stop={stop}
         />
@@ -132,7 +132,7 @@ function Splash() {
             eyebrow="Чайное искусство"
             title="Чай"
             sub="чайные мастера"
-            hint="вправо →"
+            hint="→"
             onChoose={() => choose("tea")}
             stop={stop}
           />
@@ -319,7 +319,7 @@ function Side({
         <span className="border-b border-gold/50 pb-1 transition-colors group-hover:border-gold group-hover:text-gold">
           Войти
         </span>
-        <span className="text-[0.6rem] tracking-normal text-foreground/50 normal-case">{hint}</span>
+        <span className="text-sm tracking-normal text-gold/70">{hint}</span>
       </motion.button>
     </div>
   );
