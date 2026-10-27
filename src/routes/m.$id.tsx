@@ -19,6 +19,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { MasterCard } from "@/components/MasterCard";
 import { FullScreenBrew } from "@/components/BrewLoader";
 import { ShareProfile } from "@/components/ShareProfile";
+import { WalletWidget } from "@/components/WalletWidget";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
@@ -143,8 +144,15 @@ function ProfileBody({ d }: { d: MasterDetail }) {
       <AppHeader />
       <main className="mx-auto max-w-5xl px-4 pt-6 pb-24">
         <div className="grid gap-8 md:grid-cols-[1.1fr_1fr] md:items-center">
-          <div style={{ containerType: "inline-size" }}>
-            <MasterCard master={m} verifiedCount={verified.length} />
+          <div className="min-w-0 space-y-3">
+            <div style={{ containerType: "inline-size" }}>
+              <MasterCard master={m} verifiedCount={verified.length} />
+            </div>
+            <WalletWidget
+              kind={m.kind === "tea" ? "tea" : "coffee"}
+              masterId={m.id}
+              workplace={m.workplace}
+            />
           </div>
           <div>
             <div className="flex items-center gap-4">
