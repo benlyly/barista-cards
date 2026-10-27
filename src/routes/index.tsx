@@ -7,6 +7,7 @@ import coffeeBean from "@/assets/coffee-bean.jpg";
 import { modeFromSwipe, useMode, type Mode } from "@/lib/mode";
 import { useAuth } from "@/lib/auth";
 import { BrewLoader } from "@/components/BrewLoader";
+import { LiquidCup } from "@/components/LiquidCup";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -153,13 +154,43 @@ function Splash() {
           transition={{ duration: 1.6, delay: 0.3, ease: EASE }}
         />
         <motion.div
-          className="splash-medallion absolute top-1/2 left-0 flex size-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full sm:size-16"
+          className="pointer-events-auto absolute top-1/2 left-0 flex h-28 w-44 -translate-x-1/2 -translate-y-1/2 sm:h-36 sm:w-56"
           style={{ opacity: chromeOpacity }}
-          initial={{ scale: 0.6 }}
-          animate={{ scale: 1 }}
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 1, delay: 0.9, ease: EASE }}
+          {...stop}
         >
-          <span className="font-display text-lg text-gold italic sm:text-xl">или</span>
+          <button
+            type="button"
+            aria-label="Чай"
+            onClick={() => choose("tea")}
+            className="relative h-full w-1/2"
+            style={{ clipPath: "polygon(100% 0, 100% 100%, 0 50%)" }}
+          >
+            <LiquidCup
+              kind="tea"
+              level={0.5}
+              clip="polygon(100% 0, 100% 100%, 0 50%)"
+              outline="99.5,0.5 99.5,99.5 0.8,50"
+              className="size-full"
+            />
+          </button>
+          <button
+            type="button"
+            aria-label="Кофе"
+            onClick={() => choose("coffee")}
+            className="relative h-full w-1/2"
+            style={{ clipPath: "polygon(0 0, 100% 50%, 0 100%)" }}
+          >
+            <LiquidCup
+              kind="coffee"
+              level={0.5}
+              clip="polygon(0 0, 100% 50%, 0 100%)"
+              outline="0.5,0.5 99.2,50 0.5,99.5"
+              className="size-full"
+            />
+          </button>
         </motion.div>
       </motion.div>
 
@@ -176,12 +207,6 @@ function Splash() {
         className="pointer-events-none absolute inset-x-0 top-[7%] z-10 flex flex-col items-center text-center"
         style={{ opacity: chromeOpacity }}
       >
-        <motion.div
-          {...rise(0.2)}
-          className="flex size-11 items-center justify-center rounded-full border border-gold/60 sm:size-12"
-        >
-          <span className="font-display text-xl text-gold italic sm:text-2xl">М</span>
-        </motion.div>
         <motion.h1
           {...rise(0.35)}
           className="mt-4 pl-[0.5em] font-display text-3xl font-medium tracking-[0.5em] uppercase sm:text-5xl"
@@ -272,7 +297,7 @@ function Side({
       </motion.p>
       <motion.h2
         {...rise(0.8)}
-        className="mt-2 font-display text-6xl leading-none font-medium italic sm:text-8xl"
+        className="mt-2 pl-[0.2em] font-display text-4xl leading-none font-medium tracking-[0.2em] uppercase sm:text-6xl"
       >
         {title}
       </motion.h2>
