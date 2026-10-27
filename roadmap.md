@@ -11,6 +11,8 @@
 - [x] Admin can hide or delete demo profiles without touching real cards
 - [x] Prominent "Создать свою карточку" button in the catalog
 - [x] Printable two-sided paper business card with real profile QR (placeholder until published)
+- [x] Master page: expandable 7-day work schedule under the card (sample data for now)
+- [ ] Masters edit their own schedule — next step, needs saving in the database
 - [ ] Give the owner admin rights — blocked: owner must sign up first, then ask
 
 ## Plan (from Oct 24)
