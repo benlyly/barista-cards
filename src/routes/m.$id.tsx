@@ -144,7 +144,7 @@ function ProfileBody({ d }: { d: MasterDetail }) {
       <AppHeader />
       <main className="mx-auto max-w-5xl px-4 pt-6 pb-24">
         <div className="grid gap-8 md:grid-cols-[1.1fr_1fr] md:items-center">
-          <div className="space-y-3">
+          <div className="min-w-0 space-y-3">
             <div style={{ containerType: "inline-size" }}>
               <MasterCard master={m} verifiedCount={verified.length} />
             </div>
