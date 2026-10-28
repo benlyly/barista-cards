@@ -99,7 +99,7 @@ ctx.save(); body(); ctx.clip(); ctx.globalCompositeOperation = "lighter";
 const cx = vertex === "left" ? 0 : vertex === "right" ? W : W / 2;
 const pulse = 1 + Math.sin(t * 1.5) * 0.05;
 const caustic = ctx.createRadialGradient(cx, H, 2, cx, H, H * 0.75 * pulse);
-caustic.addColorStop(0, pal.caustic); caustic.addColorStop(0.5, pal.caustic + "22"); caustic.addColorStop(1, "rgba(0, 0, 0, 0)");
+caustic.addColorStop(0, pal.caustic); caustic.addColorStop(0.5, pal.caustic.replace(/[\d.]+\)$/, "0.12)")); caustic.addColorStop(1, "rgba(0, 0, 0, 0)");
 ctx.fillStyle = caustic; ctx.fillRect(0, 0, W, H);
 const sub = ctx.createLinearGradient(0, base - 2, 0, base + 18);
 sub.addColorStop(0, pal.surface); sub.addColorStop(1, "rgba(0, 0, 0, 0)");

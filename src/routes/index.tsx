@@ -153,7 +153,7 @@ function Splash() {
       <AnimatePresence>
         {chosen && (
           <motion.div className="absolute inset-0 z-50 flex items-center justify-center bg-black" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} {...stop}>
-            <BrewLoader kind={chosen} />
+            <BrewLoader mode={chosen} />
           </motion.div>
         )}
       </AnimatePresence>
