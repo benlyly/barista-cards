@@ -1,14 +1,26 @@
-# Welcome to your Lovable project
+# Barista Cards
+
+я в итоге хотел бы сделать такое приложение или сайт сначала где условный бариста мог бы зайти зарегестрироваться и создать свою везитную карточку... сколько он работает в сфере какие чемпионаты посетил какие напитки свои создал и придумал и тд... таким образом люди бы попив у него вкусный кофе могли бы подписаться там на него и следить за самим гуру кофе или чая где он работает какие кофейни советует и тд... таким образом у каждого баристы были бы свои фанаты ради которых он старался становиться лучше а у пользователей личные баристы которых они всегда смогли бы найти и выпить свои любимые напитки...
+
+мастера тут как раз самые главные мне всегда казаолсь не справедливо что их труды недооценивают и этим приложением я бы хотел сделать их чуточку более популярными и узнаваемыми в социальной среде... так что я думаю надо начать с барист а уж они сами подписывать будут клиентов что к ним приходят чтобы набрать аудиторию побольше
+
+пусть в профиле можно указать достижения, признание коллег и отзывы гостей отдельно. Достижения могут быть как добавленные самим мастером, так и подтверждённые.
+
+я с самого начала видел такой экран разделенный на слева листочек чая а справа зерно кофе и ты моежшь тянуть экран как свайп в сторну какого тебе загрузить... и если смхиваешь вправо то начинает загрузка в виде заварки чая красивая а влево например заварка кофе как загрузка профиля... профильм можно сделать прям как визитки или карточки банковские на котрых будет написано должности аватврка и тд... и они будут у вас в меню лежать красивые и на какой кликнешь та увеличиваетсся
+
+Пусть человек в любой момент переключается между чаем и кофе — переключатель разместить в компактной шапке над карточками, чтобы он не отвлекал от мастеров; смахивание поддержать как дополнительный жест.
+
+может попробуешь собрать уже первую версию?
 
 This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/d5280fe3-782a-43e4-9e1d-170d941a0c51).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +32,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
