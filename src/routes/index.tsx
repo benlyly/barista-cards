@@ -118,7 +118,7 @@ function Splash() {
       <motion.div className="pointer-events-none absolute inset-y-0 z-10 w-0" style={{ left: dividerLeft }}>
         <motion.div className="absolute inset-y-0 -left-[0.5px] w-[1px] bg-gradient-to-b from-white/5 via-zinc-400/40 to-white/5" initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ duration: 1.4, delay: 0.2, ease: EASE }} />
 
-        <div className="pointer-events-auto absolute top-1/2 left-0 flex aspect-square w-[clamp(150px,20vw,220px)] -translate-x-1/2 -translate-y-1/2 items-center justify-center" {...stop}>
+        <div className="pointer-events-auto absolute top-1/2 left-0 flex aspect-[2/1] w-[clamp(220px,34vw,400px)] -translate-x-1/2 -translate-y-1/2 items-center justify-center" {...stop}>
           <motion.button type="button" aria-label="Чай" onClick={() => choose("tea")} style={{ x: leftHalfX, rotate: leftHalfRotate, opacity: leftHalfOpacity, clipPath: "polygon(100% 0, 100% 100%, 0 50%)", transformOrigin: "100% 50%" }} className="relative h-full w-1/2 cursor-pointer">
             <LiquidCup kind="tea" level={0.46} clip="polygon(100% 0, 100% 100%, 0 50%)" vertex="left" outline="100,0 100,100 0,50" className="size-full" />
           </motion.button>
