@@ -82,7 +82,14 @@ export function WalletWidget({ kind, masterId, workplace }: Props) {
             transition={spring}
           >
             <div className="border-t border-white/5 px-3 pt-3 pb-4" onPointerDown={(e) => e.stopPropagation()}>
-              <ol className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 touch-pan-x [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {/* ИСПРАВЛЕНО: Полная изоляция жестов свайпа списка от родительского экрана */}
+<ol 
+  className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 touch-pan-x [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+  onPointerDown={(e) => e.stopPropagation()}
+  onPointerMove={(e) => e.stopPropagation()}
+  onPointerUp={(e) => e.stopPropagation()}
+>
+
                 {days.map((d, i) => (
                   <motion.button
                     key={d.key}
