@@ -63,7 +63,6 @@ export function WalletWidget({ kind, masterId, workplace }: Props) {
             transition={spring}
           >
             <div className="border-t border-white/5 px-3 pt-3 pb-4" onPointerDown={(e) => e.stopPropagation()}>
-              {/* Исправленный нативный touch-скролл, скрывающий системные полосы прокрутки */}
               <ol className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 touch-pan-x [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {days.map((d, i) => (
                   <motion.li
@@ -71,16 +70,16 @@ export function WalletWidget({ kind, masterId, workplace }: Props) {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ ...spring, delay: 0.03 * i }}
-                    onClick={() => console.log("Клик по дню:", d.date)}
+                    onClick={() => console.log("Выбран сдвиг на дату:", d.date)}
                     className={cn(
-                      "flex w-[6.5rem] shrink-0 snap-start flex-col rounded-xl border px-3 py-2.5 cursor-pointer",
+                      "flex w-[6.5rem] shrink-0 snap-start flex-col rounded-xl border px-3 py-2.5 cursor-pointer pointer-events-auto",
                       d.isToday
                         ? "border-amber-500/40 bg-amber-500/5 shadow-[0_0_20px_-6px_rgba(245,158,11,0.2)]"
                         : "border-white/5 bg-zinc-900/20",
                       !d.working && "opacity-40",
                     )}
                   >
-                    <div className="flex items-baseline justify-between">
+                    <div className="flex items-baseline justify-between w-full">
                       <span className={cn("text-xs font-semibold tracking-widest", d.isToday ? "text-amber-500" : "text-zinc-300")}>
                         {d.weekday}
                       </span>
