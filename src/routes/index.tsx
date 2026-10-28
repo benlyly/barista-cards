@@ -166,16 +166,52 @@ function Splash() {
   );
 }
 
-function Side({ side, eyebrow, title, sub, hint, onChoose, stop }: { side: "left" | "right"; eyebrow: string; title: string; sub: string; hint: string; onChoose: () => void; stop: any }) {
+function Side({
+  side,
+  eyebrow,
+  title,
+  sub,
+  hint,
+  onChoose,
+  stop,
+}: {
+  side: "left" | "right";
+  eyebrow: string;
+  title: string;
+  sub: string;
+  hint: string;
+  onChoose: () => void;
+  stop: any;
+}) {
   const isRight = side === "right";
   return (
-    <div className={`absolute bottom-[24%] z-10 flex w-[42vw] flex-col ${isRight ? "right-0 items-end pr-6 text-right sm:pr-14" : "left-0 items-start pl-6 text-left sm:pl-14"}`}>
-      <motion.p {...rise(0.5)} className="text-[0.55rem] font-semibold tracking-[0.25em] text-zinc-500 uppercase sm:text-xs">{eyebrow}</motion.p>
-<motion.h2 {...rise(0.65)} className="mt-1 font-display text-2xl font-light tracking-wide text-zinc-100 sm:text-5xl uppercase">{title}</motion.h2>
-<motion.p {...rise(0.8)} className="mt-1.5 text-[0.65rem] font-medium text-zinc-400 sm:text-xs">{sub}</motion.p>
-<motion.button type="button" {...stop} onClick={onChoose} className="mt-4 flex items-center gap-1.5 rounded-full border border-white/5 bg-zinc-950/40 px-3 py-1 text-[0.55rem] tracking-[0.2em] text-zinc-400 uppercase transition-all hover:border-white/10 hover:text-zinc-200 cursor-pointer">
-{hint}
-</motion.button>
-
-);
+    <div
+      className={`absolute bottom-[24%] z-10 flex w-[42vw] flex-col ${
+        isRight 
+          ? "right-0 items-end pr-6 text-right sm:pr-14" 
+          : "left-0 items-start pl-6 text-left sm:pl-14"
+      }`}
+    >
+      <motion.p {...rise(0.5)} className="text-[0.55rem] font-semibold tracking-[0.25em] text-zinc-500 uppercase sm:text-xs">
+        {eyebrow}
+      </motion.p>
+      <motion.h2
+        {...rise(0.65)}
+        className="mt-1 font-display text-2xl font-light tracking-wide text-zinc-100 sm:text-5xl uppercase"
+      >
+        {title}
+      </motion.h2>
+      <motion.p {...rise(0.8)} className="mt-1.5 text-[0.65rem] font-medium text-zinc-400 sm:text-xs">
+        {sub}
+      </motion.p>
+      <motion.button
+        type="button"
+        {...stop}
+        onClick={onChoose}
+        className="mt-4 flex items-center gap-1.5 rounded-full border border-white/5 bg-zinc-950/40 px-3 py-1 text-[0.55rem] tracking-[0.2em] text-zinc-400 uppercase transition-all hover:border-white/10 hover:text-zinc-200 cursor-pointer"
+      >
+        <span>{hint}</span>
+      </motion.button>
+    </div>
+  );
 }
