@@ -1,189 +1,296 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useRef, useState } from "react";
-import { animate, motion, useMotionValue, useTransform, AnimatePresence } from "motion/react";
-import { ArrowRight } from "lucide-react";
-import { modeFromSwipe, useMode, type Mode } from "@/lib/mode";
-import { useAuth } from "@/lib/auth";
-import { BrewLoader } from "@/components/BrewLoader";
-import { LiquidCup } from "@/components/LiquidCup";
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>master.club — Кинетический Ромб</title>
+  <!-- Tailwind CSS для люксового темного UI -->
+  <script src="https://tailwindcss.com"></script>
+  <!-- Motion (Framer Motion) для чистой физики пружин -->
+  <script src="https://unpkg.com"></script>
+  <style>
+    @import url('https://googleapis.com');
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #070708;
+    }
+    /* Точные маски обрезки половин горизонтального ромба */
+    .clip-tea { clip-path: polygon(100% 0, 100% 100%, 0 50%); }
+    .clip-coffee { clip-path: polygon(0 0, 100% 50%, 0 100%); }
+  </style>
+</head>
+<body class="h-[100svh] w-full text-white overflow-hidden select-none touch-none relative flex flex-col items-center justify-between py-[8%]">
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Мастер — club бариста и чайных мастеров" },
-      { name: "description", content: "Выберите чай или кофе и откройте именные визитки мастеров." },
-    ],
-  }),
-  component: Splash,
-});
+  <!-- ЛЮКС-ФОН: Абстрактный световой эмбиент и аналоговое пленочное зерно -->
+  <div class="absolute inset-0 pointer-events-none z-0">
+    <!-- Чайное нефритовое свечение слева -->
+    <div class="absolute top-1/2 left-[-15%] size-[60vw] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(90,130,40,0.06)_0%,transparent,70%)] blur-[90px]"></div>
+    <!-- Кофейное карамельное свечение справа -->
+    <div class="absolute top-1/2 right-[-15%] size-[60vw] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(140,80,30,0.06)_0%,transparent,70%)] blur-[90px]"></div>
+    <!-- Слой процедурного шума (матовая бумага Touche Cover) -->
+    <div class="absolute inset-0 opacity-[0.025] mix-blend-overlay" style="background-image: url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://w3.org id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E&quot;);"></div>
+    <!-- Глубокая виньетка -->
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.85)_100%)]"></div>
+  </div>
 
-const EASE = [0.22, 1, 0.36, 1] as const;
-const rise = (delay: number) => ({
-  initial: { opacity: 0, y: 14 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 1.1, delay, ease: EASE },
-});
+  <!-- ШАПКА -->
+  <header class="z-10 flex flex-col items-center text-center opacity-80 pointer-events-none">
+    <h1 class="text-2xl font-light tracking-[0.5em] uppercase sm:text-4xl text-zinc-100 pl-[0.5em]">Мастер</h1>
+    <div class="mt-2.5 flex items-center gap-3">
+      <span class="h-[0.5px] w-6 bg-zinc-800 sm:w-12"></span>
+      <span class="text-[0.55rem] tracking-[0.35em] text-zinc-400 uppercase sm:text-[0.65rem]">клуб бариста и чайных мастеров</span>
+      <span className="h-[0.5px] w-6 bg-zinc-800 sm:w-12"></span>
+    </div>
+  </header>
 
-function Splash() {
-  const { setMode } = useMode();
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const x = useMotionValue(0);
-  
-  const leftWidth = useTransform(x, (v) => `calc(50% + ${v}px)`);
-  const dividerLeft = useTransform(x, (v) => `calc(50% + ${v}px)`);
-  const chromeOpacity = useTransform(x, [-140, 0, 140], [0.35, 1, 0.35]);
-  
-  const start = useRef<number | null>(null);
-  const lock = useRef(false);
-  const [chosen, setChosen] = useState<Mode | null>(null);
+  <!-- ЦЕНТРАЛЬНЫЙ АНТИСТРЕСС-УЗЕЛ: Магнитный Ромб -->
+  <div id="drag-zone" class="relative z-10 flex aspect-square w-[clamp(160px,22vw,240px)] items-center justify-center cursor-grab active:cursor-grabbing">
+    
+    <!-- Тонкая вертикальная струна-разделитель -->
+    <div id="center-string" class="absolute inset-y-[-100%] w-[1px] bg-gradient-to-b from-white/0 via-white/20 to-white/0 pointer-events-none"></div>
 
-  const choose = (m: Mode) => {
-    if (lock.current) return;
-    lock.current = true;
-    setChosen(m);
-    setMode(m);
-    const w = typeof window !== "undefined" ? window.innerWidth : 1000;
-    animate(x, m === "tea" ? w / 2 : -w / 2, { duration: 0.7, ease: [0.65, 0, 0.35, 1] });
-    setTimeout(() => navigate({ to: "/masters" }), 2600);
-  };
-
-  const onDown = (e: React.PointerEvent) => {
-    if (lock.current) return;
-    start.current = e.clientX;
-  };
-  const onMove = (e: React.PointerEvent) => {
-    if (start.current === null || lock.current) return;
-    x.set((e.clientX - start.current) * 0.9);
-  };
-  const onUp = (e: React.PointerEvent) => {
-    if (start.current === null) return;
-    const dx = e.clientX - start.current;
-    start.current = null;
-    const m = modeFromSwipe(dx, 80);
-    if (m) choose(m);
-    else if (Math.abs(dx) < 6) choose(e.clientX < window.innerWidth / 2 ? "tea" : "coffee");
-    else animate(x, 0, { type: "spring", stiffness: 300, damping: 30 });
-  };
-  const stop = {
-    onPointerDown: (e: React.PointerEvent) => e.stopPropagation(),
-    onPointerUp: (e: React.PointerEvent) => e.stopPropagation(),
-  };
-
-  return (
-    <main
-      className="splash-root relative h-[100svh] w-full cursor-grab touch-none overflow-hidden select-none active:cursor-grabbing bg-[#070708] text-white"
-      onPointerDown={onDown}
-      onPointerMove={onMove}
-      onPointerUp={onUp}
-      onPointerCancel={onUp}
-    >
-      {/* ПРАВАЯ ПОДЛОЖКА (КОФЕ) */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/2 right-[-20%] size-[60vw] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(140,80,30,0.07)_0%,transparent_70%)] blur-[90px] pointer-events-none" />
-        <Side side="right" eyebrow="Кофейное ремесло" title="Кофе" sub="бариста и обжарщики" hint="← войти" onChoose={() => choose("coffee")} stop={stop} />
+    <!-- ЛЕВАЯ КАРТА-МАГНИТ (ЧАЙ) -->
+    <div id="card-tea" class="absolute inset-y-0 left-0 w-1/2" style="transform-origin: 100% 50%;">
+      <div class="size-full relative clip-tea bg-zinc-900/10 backdrop-blur-[1px]">
+        <canvas id="canvas-tea" class="absolute inset-0 size-full"></canvas>
+        <!-- Тонкий векторный контур грани -->
+        <svg class="absolute inset-0 size-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <polygon points="100,0 100,100 0,50" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" vector-effect="non-scaling-stroke"/>
+        </svg>
       </div>
+    </div>
 
-      {/* ЛЕВАЯ ПОДЛОЖКА (ЧАЙ) */}
-      <motion.div className="absolute inset-y-0 left-0 overflow-hidden" style={{ width: leftWidth }}>
-        <div className="absolute inset-y-0 left-0 w-[100vw]">
-          <div className="absolute top-1/2 left-[-20%] size-[60vw] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(90,130,40,0.07)_0%,transparent_70%)] blur-[90px] pointer-events-none" />
-          <Side side="left" eyebrow="Чайное искусство" title="Чай" sub="чайные мастера" hint="войти →" onChoose={() => choose("tea")} stop={stop} />
-        </div>
-      </motion.div>
+    <!-- ПРАВАЯ КАРТА-МАГНИТ (КОФЕ) -->
+    <div id="card-coffee" class="absolute inset-y-0 right-0 w-1/2" style="transform-origin: 0% 50%;">
+      <div class="size-full relative clip-coffee bg-zinc-900/10 backdrop-blur-[1px]">
+        <canvas id="canvas-coffee" class="absolute inset-0 size-full"></canvas>
+        <svg class="absolute inset-0 size-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <polygon points="0,0 100,50 0,100" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" vector-effect="non-scaling-stroke"/>
+        </svg>
+      </div>
+    </div>
 
-      {/* ИСПРАВЛЕНО: Чистый, валидный SVG-код матовой бумаги Touche Cover */}
-      <div 
-        className="absolute inset-0 opacity-[0.025] pointer-events-none mix-blend-overlay"
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://w3.org id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
-      />
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.85)_100%)]" />
+  </div>
 
-      {/* РАЗДЕЛИТЕЛЬ И РОМБ */}
-      <motion.div className="pointer-events-none absolute inset-y-0 z-10 w-0" style={{ left: dividerLeft }}>
-        <motion.div className="absolute inset-y-0 -left-px w-px bg-gradient-to-b from-white/5 via-zinc-500/30 to-white/5" initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ duration: 1.6, delay: 0.3, ease: EASE }} />
-        
-        <motion.div
-          className="pointer-events-auto absolute top-1/2 left-0 flex h-28 w-44 -translate-x-1/2 -translate-y-1/2 sm:h-36 sm:w-56"
-          style={{ opacity: chromeOpacity }}
-          initial={{ scale: 0.6, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1, delay: 0.9, ease: EASE }}
-          {...stop}
-        >
-          <button
-            type="button"
-            aria-label="Чай"
-            onClick={() => choose("tea")}
-            className="relative h-full w-1/2 cursor-pointer"
-            style={{ clipPath: "polygon(100% 0, 100% 100%, 0 50%)" }}
-          >
-            <LiquidCup kind="tea" level={0.46} clip="polygon(100% 0, 100% 100%, 0 50%)" outline="99.5,0.5 99.5,99.5 0.8,50" className="size-full" />
-          </button>
-          <button
-            type="button"
-            aria-label="Кофе"
-            onClick={() => choose("coffee")}
-            className="relative h-full w-1/2 cursor-pointer"
-            style={{ clipPath: "polygon(0 0, 100% 50%, 0 100%)" }}
-          >
-            <LiquidCup kind="coffee" level={0.46} clip="polygon(0 0, 100% 50%, 0 100%)" outline="0.5,0.5 99.2,50 0.5,99.5" className="size-full" />
-          </button>
-        </motion.div>
-      </motion.div>
+  <!-- ФУТЕР -->
+  <footer class="z-10 flex flex-col items-center text-center opacity-80 pointer-events-none">
+    <p class="font-sans text-[0.75rem] font-light tracking-[0.12em] text-zinc-500 italic sm:text-[0.85rem]">"...find the one whose love you drink..."</p>
+  </footer>
 
-      {/* РАМКА И ШАПКА */}
-      <motion.div className="pointer-events-none absolute inset-3 z-10 border border-white/5 sm:inset-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.6, delay: 0.5 }} />
+  <!-- СКРИПТ: Физика жидкостей, Магнитный отрыв и Импульс столкновения -->
+  <script>
+    const { animate, useMotionValue, useTransform } = Motion;
 
-      <motion.header className="pointer-events-none absolute inset-x-0 top-[7%] z-10 flex flex-col items-center text-center px-4" style={{ opacity: chromeOpacity }}>
-        <motion.h1 {...rise(0.35)} className="mt-4 pl-[0.5em] font-display text-2xl font-light tracking-[0.5em] uppercase sm:text-4xl text-zinc-100">Мастер</motion.h1>
-        <motion.div {...rise(0.5)} className="mt-3 flex items-center gap-3">
-          <span className="h-px w-8 bg-zinc-800 sm:w-14" />
-          <span className="text-[0.6rem] tracking-[0.35em] text-zinc-400 uppercase sm:text-[0.7rem]">клуб бариста и чайных мастеров</span>
-          <span className="h-px w-8 bg-zinc-800 sm:w-14" />
-        </motion.div>
-      </motion.header>
+    // Глобальный управляющий сдвиг (координата натяжения магнита)
+    const pullX = useMotionValue(0);
 
-      {/* СЛОГАН И ПРИГЛАШЕНИЕ ДЛЯ МАСТЕРОВ */}
-      <motion.div className="absolute inset-x-0 bottom-[5%] z-10 flex flex-col items-center gap-3 px-6 text-center" style={{ opacity: chromeOpacity }}>
-        <motion.p {...rise(0.9)} className="font-sans text-[0.75rem] font-light tracking-[0.12em] text-zinc-500 italic sm:text-[0.85rem]">"...find the one whose love you drink..."</motion.p>
-        <motion.p {...rise(1.1)} className="font-display text-base text-zinc-300 italic sm:text-lg">Вы мастер своего дела?</motion.p>
-        <motion.div {...rise(1.25)}>
-          <Link to={user ? "/_authenticated/me" : "/auth"} {...stop} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-6 py-2.5 text-[0.7rem] font-semibold tracking-[0.25em] text-zinc-200 uppercase transition-all hover:bg-white/10">Получить именную визитку <ArrowRight className="size-3.5" /></Link>
-        </motion.div>
-        <motion.div {...rise(1.4)}>
-          <Link to="/masters" {...stop} className="text-[0.7rem] tracking-[0.15em] text-zinc-500 underline-offset-4 hover:text-zinc-300 hover:underline">Сразу к мастерам</Link>
-        </motion.div>
-      </motion.div>
+    // Связываем физику отрыва половин: левая летит влево быстрее, правая отстает
+    const cardTea = document.getElementById("card-tea");
+    const cardCoffee = document.getElementById("card-coffee");
+    const centerString = document.getElementById("center-string");
 
-      <AnimatePresence>
-        {chosen && (
-          <motion.div className="absolute inset-0 z-50 flex items-center justify-center bg-black" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ delay: 0.5, duration: 0.4 }} {...stop}>
-            <BrewLoader kind={chosen} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </main>
-  );
+    pullX.on("change", (v) => {
+      // Магнитное разделение траекторий с инерционным микро-поворотом (tilt)
+      const tX = v < 0 ? v * 1.3 - 15 : v * 0.35;
+      const cX = v > 0 ? v * 1.3 + 15 : v * 0.35;
+      const tRot = (v / 150) * -6;
+      const cRot = (v / 150) * -6;
+
+      cardTea.style.transform = `translateX(${tX}px) rotate(${v < 0 ? tRot : tRot * 0.3}deg)`;
+      cardTea.style.opacity = Math.max(0.3, 1 - Math.abs(v) / 350);
+      
+      cardCoffee.style.transform = `translateX(${cX}px) rotate(${v > 0 ? cRot : cRot * 0.3}deg)`;
+      cardCoffee.style.opacity = Math.max(0.3, 1 - Math.abs(v) / 350);
+
+      centerString.style.transform = `translateX(${v * 0.5}px)`;
+      centerString.style.opacity = Math.max(0, 1 - Math.abs(v) / 80);
+    });
+
+    // --- НАСТРОЙКА ХОЛСТОВ ЖИДКОСТИ ---
+    const config = {
+      tea: { stops: ["rgba(206,222,128,0.35)", "rgba(138,178,70,0.6)", "rgba(42,98,44,0.82)", "rgba(8,32,18,0.96)"], caustic: "rgba(210,245,140,0.45)", meniscus: "rgba(240,252,200,0.95)", shadow: "rgba(180,235,110,0.8)", vertex: "left" },
+      coffee: { stops: ["rgba(225,155,85,0.35)", "rgba(155,85,35,0.65)", "rgba(75,35,12,0.85)", "rgba(22,9,3,0.96)"], caustic: "rgba(255,180,95,0.42)", meniscus: "rgba(255,225,175,0.95)", shadow: "rgba(245,155,75,0.8)", vertex: "right" }
+    };
+
+    class LiquidCupSimulation {
+      constructor(canvasId, type) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext("2d", { alpha: true });
+        this.type = type;
+        this.pal = config[type];
+        this.N = 54;
+        this.h = new Float32Array(this.N);
+        this.v = new Float32Array(this.N);
+        this.level = 0.46;
+        this.t = 0;
+        this.mouse = { x: -1000, y: -1000, px: -1000, vx: 0, has: false };
+
+        this.init();
+      }
+
+      init() {
+        const resize = () => {
+          const r = this.canvas.getBoundingClientRect();
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          this.W = r.width; this.H = r.height;
+          this.canvas.width = this.W * dpr; this.canvas.height = this.H * dpr;
+          this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        };
+        resize();
+        window.addEventListener("resize", resize);
+
+        this.canvas.addEventListener("pointermove", (e) => {
+          const r = this.canvas.getBoundingClientRect();
+          this.mouse.x = e.clientX - r.left; this.mouse.y = e.clientY - r.top;
+          if (!this.mouse.has) { this.mouse.px = this.mouse.x; this.mouse.has = true; }
+        });
+        this.canvas.addEventListener("pointerleave", () => { this.mouse.has = false; this.mouse.vx = 0; });
+      }
+
+      // Функция вызова мощной волны при физическом ударе/соударении плит ромба
+      triggerImpact(force) {
+        const intensity = Math.max(-25, Math.min(28, force * 0.35));
+        if (this.pal.vertex === "left") {
+          this.v[0] -= intensity * 1.8;
+          this.v[1] -= intensity * 1.2;
+        } else {
+          this.v[this.N - 1] += intensity * 1.8;
+          this.v[this.N - 2] += intensity * 1.2;
+        }
+      }
+
+      update() {
+        this.t += 0.015;
+        const base = this.H * (1 - this.level);
+        const dx = this.W / (this.N - 1);
+
+        if (this.mouse.has) {
+          const delta = this.mouse.x - this.mouse.px;
+          this.mouse.px = this.mouse.x;
+          this.mouse.vx += (delta - this.mouse.vx) * 0.22;
+        } else { this.mouse.vx *= 0.85; }
+
+        const vx = Math.max(-24, Math.min(28, this.mouse.vx));
+        const near = this.mouse.has && Math.abs(this.mouse.y - base) < this.H * 0.4 ? 1 : 0;
+        const sigma = this.W * 0.16;
+
+        for (let i = 0; i < this.N; i++) {
+          const px = i * dx;
+          const dist = px - this.mouse.x;
+          const g = Math.exp(-(dist * dist) / (2 * sigma * sigma));
+
+          if (near > 0) {
+            // Кинетический отклик на вектор скорости пролета мыши
+            this.v[i] -= vx * (dist / sigma) * g * near * 0.035;
+          }
+
+          // Тонкое фоновое дыхание легкого чая/кофе
+          const ripple = (Math.sin(this.t * 2.2 + i * 0.15) * 0.5 + Math.cos(this.t * 0.9 - i * 0.25) * 0.3);
+          this.v[i] += -0.032 * (this.h[i] - ripple) - 0.016 * this.v[i];
+          this.h[i] += this.v[i];
+        }
+
+        // Поверхностное натяжение (волновой перенос между соседями)
+        for (let pass = 0; pass < 2; pass++) {
+          for (let i = 1; i < this.N - 1; i++) {
+            const spread = 0.18 * (this.h[i - 1] + this.h[i + 1] - 2 * this.h[i]);
+            this.v[i] += spread; this.h[i] += spread;
+          }
+        }
+
+        const lim = this.H * 0.3;
+for (let i = 0; i < this.N; i++) this.h[i] = Math.max(-lim, Math.min(lim, this.h[i]));
 }
-
-function Side({ side, eyebrow, title, sub, hint, onChoose, stop }: { side: "left" | "right"; eyebrow: string; title: string; sub: string; hint: string; onChoose: () => void; stop: any }) {
-  const right = side === "right";
-  return (
-    <div className={right ? "absolute right-0 bottom-[22%] flex w-1/2 flex-col items-end px-5 text-right sm:px-14" : "absolute bottom-[22%] left-0 flex w-full flex-col items-start px-5 sm:px-14"}>
-      <motion.p {...rise(0.7)} className="text-[0.55rem] whitespace-nowrap tracking-[0.22em] text-zinc-500 uppercase sm:text-xs">
-        {eyebrow}
-      </motion.p>
-      <motion.h2 {...rise(0.8)} className="mt-2 pl-[0.2em] font-display text-4xl font-light tracking-[0.2em] uppercase sm:text-6xl text-zinc-100">
-        {title}
-      </h2>
-      <motion.p {...rise(0.95)} className="mt-3 text-xs text-zinc-400 sm:text-sm">
-        {sub}
-      </motion.p>
-      <motion.button {...rise(1.05)} type="button" {...stop} onClick={onChoose} className="group mt-5 inline-flex items-center gap-2 text-[0.65rem] font-semibold tracking-[0.3em] text-zinc-400 uppercase sm:text-xs cursor-pointer">
-Войти
-{hint}
-</motion.button>
-
-);
+render() {
+this.ctx.clearRect(0, 0, this.W, this.H);
+const base = this.H * (1 - this.level);
+const dx = this.W / (this.N - 1);
+const trace = () => {
+this.ctx.moveTo(0, base + this.h[0]);
+for (let i = 0; i < this.N - 1; i++) {
+const x0 = i * dx; const y0 = base + this.h[i];
+const x1 = (i + 1) * dx; const y1 = base + this.h[i + 1];
+this.ctx.quadraticCurveTo(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
 }
+this.ctx.lineTo(this.W, base + this.h[this.N - 1]);
+};
+// 1. Прозрачное градиентное тело
+this.ctx.beginPath(); this.ctx.moveTo(0, this.H); this.ctx.lineTo(0, base + this.h[0]);
+trace(); this.ctx.lineTo(this.W, this.H); this.ctx.closePath();
+const bodyGrad = this.ctx.createLinearGradient(0, base - 10, 0, this.H);
+bodyGrad.addColorStop(0, this.pal.stops[0]); bodyGrad.addColorStop(0.2, this.pal.stops[1]);
+bodyGrad.addColorStop(0.6, this.pal.stops[2]); bodyGrad.addColorStop(1, this.pal.stops[3]);
+this.ctx.fillStyle = bodyGrad; this.ctx.fill();
+// 2. Рассеянная каустика в активном углу ромба
+this.ctx.save();
+this.ctx.beginPath(); this.ctx.moveTo(0, this.H); this.ctx.lineTo(0, base + this.h[0]);
+trace(); this.ctx.lineTo(this.W, this.H); this.ctx.closePath(); this.ctx.clip();
+this.ctx.globalCompositeOperation = "lighter";
+const cx = this.pal.vertex === "left" ? 0 : this.W;
+const caustic = this.ctx.createRadialGradient(cx, this.H, 2, cx, this.H, this.H * 0.75);
+caustic.addColorStop(0, this.pal.caustic); caustic.addColorStop(0.5, this.pal.caustic + "22");
+caustic.addColorStop(1, "rgba(0,0,0,0)");
+this.ctx.fillStyle = caustic; this.ctx.fillRect(0, 0, this.W, this.H);
+this.ctx.restore();
+// 3. Линия поверхностного мениска со свечением
+this.ctx.save(); this.ctx.beginPath(); trace();
+this.ctx.strokeStyle = this.pal.meniscus; this.ctx.lineWidth = 1.0;
+this.ctx.shadowBlur = 6; this.ctx.shadowColor = this.pal.shadow;
+this.ctx.stroke(); this.ctx.restore();
+// 4. Тонкий стеклянный отблеск под водой
+this.ctx.beginPath();
+const offsetBase = base + 1.8;
+this.ctx.moveTo(0, offsetBase + this.h[0]);
+for (let i = 0; i < this.N - 1; i++) {
+const x0 = i * dx; const y0 = offsetBase + this.h[i];
+this.ctx.quadraticCurveTo(x0, y0, (x0 + (i + 1) * dx) / 2, (y0 + offsetBase + this.h[i + 1]) / 2);
+}
+this.ctx.lineTo(this.W, offsetBase + this.h[this.N - 1]);
+this.ctx.strokeStyle = "rgba(255,255,255,0.25)"; this.ctx.lineWidth = 0.6;
+this.ctx.stroke();
+}
+loop() {
+this.update(); this.render();
+requestAnimationFrame(() => this.loop());
+}
+}
+// Запускаем обе симуляции
+const simTea = new LiquidCupSimulation("canvas-tea", "tea");
+const simCoffee = new LiquidCupSimulation("canvas-coffee", "coffee");
+simTea.loop(); simCoffee.loop();
+// --- ОБРАБОТКА СВАЙП-ЖЕСТОВ И СХЛОПЫВАНИЯ МАГНИТОВ ---
+const dragZone = document.getElementById("drag-zone");
+let startX = null;
+let currentX = 0;
+dragZone.addEventListener("pointerdown", (e) => {
+startX = e.clientX;
+dragZone.setPointerCapture(e.pointerId);
+});
+dragZone.addEventListener("pointermove", (e) => {
+if (startX === null) return;
+const deltaX = e.clientX - startX;
+// Ограничиваем натяжение пружины магнитов, чтобы не порвать разметку
+currentX = Math.max(-140, Math.min(140, deltaX * 0.8));
+pullX.set(currentX);
+});
+dragZone.addEventListener("pointerup", (e) => {
+if (startX === null) return;
+startX = null;
+dragZone.releasePointerCapture(e.pointerId);
+const velocity = pullX.getVelocity(); // Считываем скорость отпускания пальца
+// Запускаем жесткую пружину возврата половин ромба в точку X:0
+animate(pullX, 0, {
+type: "spring",
+stiffness: 340, // Сочный резкий щелчок схлопывания
+damping: 18,
+onComplete: () => {
+// ИМПУЛЬС УДАРА: Передаем силу столкновения плиток прямо в массивы скоростей жидкостей!
+const impactForce = Math.abs(currentX) > 10 ? currentX : velocity * 0.1;
+if (Math.abs(impactForce) > 5) {
+simTea.triggerImpact(impactForce);
+simCoffee.triggerImpact(impactForce);
+}
+currentX = 0;
+}
+});
+});
