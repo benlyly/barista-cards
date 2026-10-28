@@ -92,14 +92,14 @@ function Splash() {
         </div>
       </motion.div>
 
-      {/* ТЕКСТУРА МАТОВОЙ БУМАГИ */}
+      {/* ИСПРАВЛЕНО: Чистый, валидный SVG-код матовой бумаги Touche Cover */}
       <div 
-        className="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-overlay"
+        className="absolute inset-0 opacity-[0.025] pointer-events-none mix-blend-overlay"
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://w3.org id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
       />
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.85)_100%)]" />
 
-      {/* РАЗДЕЛИТЕЛЬ И ЦЕНТРАЛЬНЫЙ МЕДАЛЬОН (РОМБ) */}
+      {/* РАЗДЕЛИТЕЛЬ И РОМБ */}
       <motion.div className="pointer-events-none absolute inset-y-0 z-10 w-0" style={{ left: dividerLeft }}>
         <motion.div className="absolute inset-y-0 -left-px w-px bg-gradient-to-b from-white/5 via-zinc-500/30 to-white/5" initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ duration: 1.6, delay: 0.3, ease: EASE }} />
         
@@ -132,7 +132,7 @@ function Splash() {
         </motion.div>
       </motion.div>
 
-      {/* РАМКА И ТЕКСТЫ */}
+      {/* РАМКА И ШАПКА */}
       <motion.div className="pointer-events-none absolute inset-3 z-10 border border-white/5 sm:inset-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.6, delay: 0.5 }} />
 
       <motion.header className="pointer-events-none absolute inset-x-0 top-[7%] z-10 flex flex-col items-center text-center px-4" style={{ opacity: chromeOpacity }}>
@@ -144,7 +144,7 @@ function Splash() {
         </motion.div>
       </motion.header>
 
-      {/* СЛОГАН И ПРИГЛАШЕНИЕ */}
+      {/* СЛОГАН И ПРИГЛАШЕНИЕ ДЛЯ МАСТЕРОВ */}
       <motion.div className="absolute inset-x-0 bottom-[5%] z-10 flex flex-col items-center gap-3 px-6 text-center" style={{ opacity: chromeOpacity }}>
         <motion.p {...rise(0.9)} className="font-sans text-[0.75rem] font-light tracking-[0.12em] text-zinc-500 italic sm:text-[0.85rem]">"...find the one whose love you drink..."</motion.p>
         <motion.p {...rise(1.1)} className="font-display text-base text-zinc-300 italic sm:text-lg">Вы мастер своего дела?</motion.p>
